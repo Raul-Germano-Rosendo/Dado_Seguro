@@ -1,0 +1,16 @@
+# MODELO DIDÁTICO de perfil cliente OpenVPN. Não contém certificado/chave.
+client
+dev tun
+proto udp
+remote <DNS_OU_IP_PUBLICO_DO_SERVIDOR> 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+remote-cert-tls server
+verb 3
+
+# Informe caminhos locais seguros ou use bloco inline preenchido fora do Git.
+ca   <CAMINHO_LOCAL_DA_CA_CERTIFICATE>
+cert <CAMINHO_LOCAL_DO_CLIENT_CERTIFICATE>
+key  <CAMINHO_LOCAL_PRIVADO_DO_CLIENTE>

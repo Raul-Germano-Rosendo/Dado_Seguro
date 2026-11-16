@@ -1,0 +1,10 @@
+# Exemplo de identificadores para EasyRSA; personalize antes do uso.
+# Não inclua senhas, chaves privadas ou certificados neste arquivo.
+set_var EASYRSA_REQ_COUNTRY    "BR"
+set_var EASYRSA_REQ_PROVINCE   "SP"
+set_var EASYRSA_REQ_CITY       "Sao Paulo"
+set_var EASYRSA_REQ_ORG        "Dado Seguro - Projeto Academico"
+set_var EASYRSA_REQ_EMAIL      "admin@example.invalid"
+set_var EASYRSA_REQ_OU         "Infraestrutura"
+
+# Confirme a sintaxe e os valores aceitos pela versão instalada do EasyRSA.

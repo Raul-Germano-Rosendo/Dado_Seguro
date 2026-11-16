@@ -1,0 +1,27 @@
+# MODELO DIDÁTICO OpenVPN — não aplicar sem adaptar e revisar.
+# Use certificados/keys reais gerados por uma PKI confiável.
+port 1194
+proto udp
+dev tun
+topology subnet
+
+# Rede virtual ilustrativa; confirme que não conflita com suas redes.
+server 10.8.0.0 255.255.255.0
+
+# Caminhos placeholder: mantenha os arquivos privados fora do Git.
+ca   <CAMINHO_PARA_CA_CERTIFICATE>
+cert <CAMINHO_PARA_SERVER_CERTIFICATE>
+key  <CAMINHO_PRIVADO_DO_SERVIDOR>
+dh   none
+
+keepalive 10 120
+persist-key
+persist-tun
+user nobody
+group nogroup
+status /var/log/openvpn/status.log
+verb 3
+
+# Adicione push de rotas apenas para redes autorizadas e após configurar
+# encaminhamento/firewall no host. Revise cifragem/TLS conforme a versão
+# instalada do OpenVPN e a política atual da instituição.

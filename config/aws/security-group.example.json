@@ -1,0 +1,14 @@
+{
+  "description": "Modelo para revisão humana; não importar sem adaptar",
+  "inbound_rules": [
+    {"protocol": "tcp", "port": 443, "source": "CIDR_PUBLICO_AUTORIZADO", "purpose": "HTTPS público, somente se esta for a entrada web"},
+    {"protocol": "tcp", "port": 22, "source": "IP_ADMINISTRATIVO/32", "purpose": "SSH restrito; prefira acesso gerenciado ou VPN"},
+    {"protocol": "udp", "port": 1194, "source": "CIDR_DE_ORIGEM_DA_VPN", "purpose": "OpenVPN conforme modelo; ajuste à configuração realmente usada"}
+  ],
+  "notes": [
+    "Remova regras de portas que não serão usadas.",
+    "Não use 0.0.0.0/0 para SSH, banco de dados ou administração.",
+    "Defina e revise regras de saída conforme os fluxos necessários.",
+    "Este JSON é documentação e não substitui validação na AWS."
+  ]
+}
