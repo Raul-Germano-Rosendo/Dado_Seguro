@@ -3,7 +3,7 @@
 ## Visão lógica
 
 ```text
-Navegador --HTTP--> Nginx Frontend (React/Vite)
+Navegador --HTTPS--> Nginx Frontend (React/Vite)
                          | /api
                          v
                   Nginx Backend (proxy)
@@ -14,7 +14,7 @@ Navegador --HTTP--> Nginx Frontend (React/Vite)
                          +--> volume local de arquivos
 ```
 
-Frontend React/Vite, API Express e PostgreSQL 16 foram integrados. O Nginx frontend serve os arquivos estáticos e encaminha `/api` para o Nginx da Backend 1; este envia ao processo API em `127.0.0.1:3000`. A API acessa o banco via `db:5432` dentro da rede privada do Compose. O banco não publica porta no host. Arquivos são persistidos em volume local Docker. A demonstração usa HTTP e uma única instância backend; não oferece TLS, alta disponibilidade ou backup externo.
+Frontend React/Vite, API Express e PostgreSQL 16 foram integrados. O Nginx frontend serve os arquivos estáticos e encaminha `/api` para o Nginx da Backend 1; este envia ao processo API em `127.0.0.1:3000`. A API acessa o banco via `db:5432` dentro da rede privada do Compose. O banco não publica porta no host. Arquivos são persistidos em volume local Docker. O TLS termina no frontend; o caminho interno na VPC continua HTTP. A demonstração usa uma única instância backend e não oferece alta disponibilidade ou backup externo.
 
 ## Fluxos esperados
 

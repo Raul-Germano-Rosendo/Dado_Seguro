@@ -46,16 +46,48 @@ cd frontend
 npm ci
 $env:VITE_USE_MOCK = "false"
 $env:VITE_API_URL = "/api"
+$env:VITE_SFTP_HOST = "IP_PUBLICO_BACKEND"
 npm run build
 ```
 
-Copie o conteúdo de `frontend/dist/` para `/var/www/dadoseguro` na instância frontend. Configure Nginx com [`deploy/nginx-frontend.conf.example`](../deploy/nginx-frontend.conf.example), preenchendo `BACKEND_PRIVATE_IP` com o endereço privado atual. Na Backend 1, configure [`deploy/nginx-backend-api.conf.example`](../deploy/nginx-backend-api.conf.example), que encaminha ao processo em loopback. Valide e recarregue Nginx após substituir o placeholder:
+Copie o conteúdo de `frontend/dist/` para `/var/www/dadoseguro` na instância frontend. Garanta que o Nginx consiga atravessar os diretórios e ler os arquivos estáticos; sem essas permissões, o fallback SPA pode responder `index.html` no lugar do JavaScript/CSS e a página fica branca:
+
+```bash
+sudo find /var/www/dadoseguro -type d -exec chmod 755 {} +
+sudo find /var/www/dadoseguro -type f -exec chmod 644 {} +
+```
+
+Configure Nginx com [`deploy/nginx-frontend.conf.example`](../deploy/nginx-frontend.conf.example), preenchendo `BACKEND_PRIVATE_IP` com o endereço privado atual. Na Backend 1, configure [`deploy/nginx-backend-api.conf.example`](../deploy/nginx-backend-api.conf.example), que encaminha ao processo em loopback. Valide e recarregue Nginx após substituir o placeholder:
 
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-O health check público é `GET /api/healthz`; a API também oferece `GET /healthz` internamente. A aplicação implantada é uma demonstração HTTP e não deve receber senhas reutilizadas nem documentos reais até habilitar TLS.
+O health check público é `GET /api/healthz`; a API também oferece `GET /healthz` internamente.
+
+## SFTP restrito e HTTPS
+
+O usuário SFTP existe somente na Backend 1, não tem shell e aceita exclusivamente uma chave pública. Gere a chave pública a partir da chave privada de acesso à Backend 1 (a chave privada nunca é copiada para o servidor nem versionada):
+
+```powershell
+ssh-keygen -y -f "$env:USERPROFILE\Downloads\ChaveEC2conf2Backend.pem" | Set-Content -Encoding ascii .\dado-sftp.pub
+scp -i "$env:USERPROFILE\Downloads\ChaveEC2conf2Backend.pem" .\deploy\configure-sftp.sh .\dado-sftp.pub ubuntu@IP_PUBLICO_BACKEND:/tmp/
+ssh -i "$env:USERPROFILE\Downloads\ChaveEC2conf2Backend.pem" ubuntu@IP_PUBLICO_BACKEND "sudo bash /tmp/configure-sftp.sh /tmp/dado-sftp.pub; sudo rm -f /tmp/configure-sftp.sh /tmp/dado-sftp.pub"
+Remove-Item .\dado-sftp.pub
+```
+
+Conecte no IP público da Backend 1, porta `22`, usuário `dado-sftp`, usando `ChaveEC2conf2Backend.pem` como chave privada. Essa chave também dá acesso administrativo ao usuário `ubuntu`; não a compartilhe com terceiros. A pasta inicial `/upload` é uma área isolada em `/srv/sftp/dado-sftp/upload`; os arquivos não aparecem automaticamente no painel da aplicação.
+
+Na instância frontend, execute `sudo bash /tmp/configure-https.sh IP_PRIVADO_BACKEND IP_PUBLICO_FRONTEND`. O script instala Certbot, emite certificado Let's Encrypt para o IP público e configura Nginx em HTTPS com redirecionamento HTTP. O Security Group da Frontend precisa permitir TCP `443`; mantenha `80` acessível para validação e renovação ACME. Certificados de IP são válidos por seis dias; o timer Certbot e o hook de recarga do Nginx devem continuar ativos. No ambiente atual, a regra 443 já estava permitida.
+
+Depois de habilitar HTTPS, atualize a API com a sobreposição Compose, que define o cookie de sessão `Secure`:
+
+```bash
+sudo docker compose -f /opt/dado-seguro/compose.yaml \
+  -f /opt/dado-seguro/deploy/compose.application.yaml up -d --force-recreate api
+```
+
+No build do frontend, defina `VITE_SFTP_HOST` para o IP público atual da Backend 1. O SFTP é um canal de transferência separado do upload HTTP da aplicação.
 
 ## Operação do banco e volumes
 
@@ -73,7 +105,7 @@ A senha aleatória do administrador inicial fica em `/opt/dado-seguro/.admin_pas
 
 ## Limites e próximos passos
 
-- HTTP não cifra tráfego; habilite HTTPS/TLS antes de usar credenciais ou documentos reais.
+- HTTPS na instância frontend termina TLS; o salto interno até a API continua em HTTP dentro da VPC.
 - A API marca `encrypted=false`; o conteúdo dos arquivos não é criptografado pela aplicação.
 - Banco e arquivos têm somente persistência local. Automatize cópia externa e teste de restauração.
 - Esta implantação publica a aplicação em uma Backend 1; não há balanceamento ou failover da API.

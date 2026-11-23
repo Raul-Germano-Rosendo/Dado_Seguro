@@ -16,13 +16,13 @@
 
 - API, login, sessão, autorização básica, upload/download e auditoria implementados conforme `frontend/src/services/api.ts`.
 - API conectada ao PostgreSQL no Compose; tabelas iniciais são garantidas na inicialização.
-- Configurar TLS para a origem publicada e permitir gestão segura de contas/senhas.
+- Permitir gestão segura de contas e senhas.
 - Criar migrações versionadas e estratégia de backup externo, com teste de restauração.
 
 ## 4 — Implantação
 
 - API e PostgreSQL implantados no Docker Compose da Backend 1; frontend e proxy publicados.
-- Configurar domínio e TLS; decidir se HAProxy ou serviço gerenciado é necessário.
+- Avaliar um domínio próprio e decidir se HAProxy ou serviço gerenciado é necessário.
 - Automatizar implantação e documentar rollback.
 
 ## 5 — Operação
@@ -33,4 +33,4 @@
 
 Estas etapas registram o que falta para sair da demonstração. O estado efetivamente implantado está em [Estado da implantação](09-estado-implantacao.md).
 
-> Atualização: frontend, API, PostgreSQL e Nginx foram integrados para demonstração em 23/11/2026. TLS, migrações, backup externo e restauração testada continuam pendentes.
+> Atualização: frontend, API, PostgreSQL, SFTP e HTTPS foram integrados para demonstração em 23/11/2026. Migrações, backup externo e restauração testada continuam pendentes.
