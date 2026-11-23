@@ -2,7 +2,7 @@
 
 Documentação de infraestrutura e planejamento técnico do projeto acadêmico **Dado Seguro**.
 
-> **Estado atual:** frontend React/Vite, API Node.js/TypeScript e PostgreSQL 16 foram integrados e implantados para demonstração. A interface pública encaminha `/api` pelo Nginx para a API; o PostgreSQL não publica porta externa. O ambiente está em HTTP, usa um único backend e não deve receber dados reais. Consulte [Estado da implantação](docs/09-estado-implantacao.md), [deploy](docs/10-deploy-docker-postgresql.md) e [segurança](docs/06-seguranca.md).
+> **Estado atual:** frontend React/Vite, API Node.js/TypeScript e PostgreSQL 16 estão integrados para demonstração. O site usa HTTPS com certificado curto para o IP público e redireciona HTTP; Certbot renova automaticamente. Há uma conta SFTP restrita no backend. A aplicação ainda usa um único backend e armazenamento local; não envie documentos reais. Consulte [Estado da implantação](docs/09-estado-implantacao.md), [deploy](docs/10-deploy-docker-postgresql.md) e [segurança](docs/06-seguranca.md).
 
 ## Conteúdo
 

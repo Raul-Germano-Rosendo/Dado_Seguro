@@ -154,8 +154,15 @@ export default function Dashboard({ user, onLogout }: { user: User; onLogout: ()
 
           <aside className="col side">
             <section className="panel">
-              <h2>Armazenamento</h2>
-              <p className="muted">Arquivos enviados ficam no volume da instância Backend. O acesso SFTP não está configurado nesta demonstração.</p>
+              <h2>Transferência SFTP</h2>
+              <p className="muted">Use um cliente SFTP com sua chave SSH para transferências fora do navegador.</p>
+              <dl className="kv">
+                <dt>Servidor</dt><dd>{import.meta.env.VITE_SFTP_HOST || 'Configure VITE_SFTP_HOST'}</dd>
+                <dt>Porta</dt><dd>22</dd>
+                <dt>Usuário</dt><dd>dado-sftp</dd>
+                <dt>Pasta</dt><dd>/upload</dd>
+              </dl>
+              <p className="hint">A pasta SFTP é uma área de recebimento separada; os arquivos não aparecem automaticamente na lista do aplicativo.</p>
             </section>
 
             <section className="panel">

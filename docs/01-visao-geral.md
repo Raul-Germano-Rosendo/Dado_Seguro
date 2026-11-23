@@ -31,4 +31,4 @@ O escopo atual é uma demonstração: login de administrador, listagem, upload, 
 
 ## Premissas e limites
 
-É uma implantação de demonstração em uma única instância backend, acessada por HTTP. TLS, cópias externas, restauração testada e alta disponibilidade permanecem pendentes. Não inclua dados reais ou credenciais neste repositório.
+É uma implantação de demonstração em uma única instância backend, com HTTPS público e Certbot para renovação do certificado de IP. SFTP está limitado a uma pasta de recebimento separada. Cópias externas, restauração testada e alta disponibilidade permanecem pendentes. Não inclua dados reais ou credenciais neste repositório.

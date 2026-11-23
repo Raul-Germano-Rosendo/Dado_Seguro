@@ -12,7 +12,7 @@ O snapshot abaixo foi fornecido pelo responsável pelo projeto em **22/11/2026 �
 
 O snapshot mostra monitoramento detalhado desabilitado. IDs de instância, nomes de recursos, grupos de segurança, IPs e DNS foram omitidos deste inventário publicado. Consulte o console AWS autorizado para esses dados.
 
-Em verificação remota separada, a Backend 1 foi identificada como Ubuntu 26.04. Em 23/11/2026 foram implantados Docker/Compose, PostgreSQL 16 e API Node.js/TypeScript. A API ficou saudável, conectada ao banco e publicada somente em loopback; PostgreSQL não tem porta publicada e os dados usam volumes locais. O frontend React foi compilado com API real e servido pelo Nginx da Frontend; `/api` é encaminhado pelo Nginx da Backend 1. A URL pública de demonstração é HTTP e não está incluída neste repositório. Consulte [deploy](10-deploy-docker-postgresql.md).
+Em verificação remota em 23/11/2026, a Backend 1 Ubuntu 26.04 executa Docker/Compose, PostgreSQL 16 e API Node.js/TypeScript. A API está saudável, conectada ao banco e publicada somente em loopback; PostgreSQL não publica porta no host. Na Frontend, Nginx serve React e HTTPS com certificado Let's Encrypt de IP; HTTP redireciona para HTTPS, e o timer Certbot está ativo. O health check público `https://IP_PUBLICO_FRONTEND/api/healthz` respondeu 200. A regra TCP 443 já existia no Security Group Frontend. Na Backend 1, o usuário SFTP `dado-sftp` está restrito a uma pasta chroot, sem shell e sem senha; o teste de envio/recebimento foi aprovado. O conteúdo SFTP fica separado dos arquivos cadastrados pelo painel. Veja [deploy](10-deploy-docker-postgresql.md).
 
 ## Arquitetura registrada anteriormente
 
@@ -30,14 +30,14 @@ O mesmo contexto informa que o frontend já foi configurado com Nginx e OpenVPN;
 - Procedimento documentado de backup e restauração testada; a existência de uma EC2 chamada “Backup” não prova que os dados ou configurações tenham cópias restauráveis.
 - Migrações versionadas para evolução do esquema (a API atualmente cria o esquema inicial ao iniciar).
 - Backup externo automatizado e teste de restauração; os volumes atuais são persistência local.
-- HTTPS/TLS antes de transportar credenciais ou arquivos reais; demonstração atual usa HTTP.
+- Certificados de IP têm validade de seis dias; manter o timer Certbot, o hook de reload e alertas de renovação monitorados.
 - Cadastro/gestão segura de usuários e troca de senha; atualmente existe apenas o administrador inicial.
 - Alta disponibilidade e balanceamento: implantação atual da aplicação encaminha para uma única Backend 1.
 - Automatização segura e reproduzível da infraestrutura e da implantação, além de monitoramento, alertas, atualização e plano de rollback.
 
 ## Próxima coleta recomendada
 
-Para conferir a aplicação, use `curl http://127.0.0.1:3000/healthz` na Backend 1 e abra a URL HTTP publicada no navegador; a página `/api/healthz` deve indicar API saudável. O fluxo atual usa uma backend, sem abrir PostgreSQL publicamente ou alterar Security Groups nesta publicação. Para verificar a arquitetura de rede/VPN mais ampla, confirme IPs privados, serviços e regras no console AWS antes de alterar forwarding ou firewall.
+Para conferir a aplicação, use `curl http://127.0.0.1:3000/healthz` na Backend 1 e abra a URL HTTPS publicada no navegador; `/api/healthz` deve indicar API saudável. O fluxo usa uma backend e não expõe PostgreSQL. Para verificar a arquitetura de rede/VPN mais ampla, confirme IPs privados, serviços e regras no console AWS antes de alterar forwarding ou firewall.
 
 ## Cuidado com os registros
 

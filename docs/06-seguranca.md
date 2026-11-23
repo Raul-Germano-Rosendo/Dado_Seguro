@@ -12,7 +12,9 @@
 
 CORS é uma política do navegador que controla quais origens podem ler respostas de uma API. Não é autenticação nem firewall. Na implantação atual, o frontend chama a API no mesmo host por `/api`, sem CORS entre origens. Se a API for publicada em host distinto, liste explicitamente origens, métodos e cabeçalhos necessários. Evite `*` com credenciais e não reflita origens arbitrárias recebidas no cabeçalho `Origin`.
 
-O acesso web publicado ainda é HTTP, sem TLS. O cookie de sessão é HttpOnly e SameSite=Lax, mas HTTP não protege credenciais, cookies nem arquivos contra interceptação na rede. A API não criptografa os conteúdos armazenados; arquivos ficam em volume local. Use somente dados fictícios e uma senha de teste. Não reutilize senhas nem suba documentos reais.
+O frontend usa HTTPS com certificado Let's Encrypt para o IPv4 público. Certificados de IP duram seis dias; Certbot deve renovar automaticamente e recarregar o Nginx. HTTP redireciona para HTTPS, e o cookie de sessão é HttpOnly, SameSite=Lax e Secure. A API não criptografa os conteúdos armazenados; arquivos ficam em volume local. Use somente dados fictícios até implantar cópias externas e gestão de usuários adequada.
+
+O usuário SFTP `dado-sftp` não recebe shell nem autenticação por senha: usa chave SSH e fica preso a `/srv/sftp/dado-sftp/upload`. Essa pasta é uma área de recebimento separada; arquivos enviados por SFTP não aparecem automaticamente no painel.
 
 ## Dados e privacidade
 
