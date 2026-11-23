@@ -46,10 +46,18 @@ cd frontend
 npm ci
 $env:VITE_USE_MOCK = "false"
 $env:VITE_API_URL = "/api"
+$env:VITE_SFTP_HOST = "IP_PUBLICO_BACKEND"
 npm run build
 ```
 
-Copie o conteúdo de `frontend/dist/` para `/var/www/dadoseguro` na instância frontend. Configure Nginx com [`deploy/nginx-frontend.conf.example`](../deploy/nginx-frontend.conf.example), preenchendo `BACKEND_PRIVATE_IP` com o endereço privado atual. Na Backend 1, configure [`deploy/nginx-backend-api.conf.example`](../deploy/nginx-backend-api.conf.example), que encaminha ao processo em loopback. Valide e recarregue Nginx após substituir o placeholder:
+Copie o conteúdo de `frontend/dist/` para `/var/www/dadoseguro` na instância frontend. Garanta que o Nginx consiga atravessar os diretórios e ler os arquivos estáticos; sem essas permissões, o fallback SPA pode responder `index.html` no lugar do JavaScript/CSS e a página fica branca:
+
+```bash
+sudo find /var/www/dadoseguro -type d -exec chmod 755 {} +
+sudo find /var/www/dadoseguro -type f -exec chmod 644 {} +
+```
+
+Configure Nginx com [`deploy/nginx-frontend.conf.example`](../deploy/nginx-frontend.conf.example), preenchendo `BACKEND_PRIVATE_IP` com o endereço privado atual. Na Backend 1, configure [`deploy/nginx-backend-api.conf.example`](../deploy/nginx-backend-api.conf.example), que encaminha ao processo em loopback. Valide e recarregue Nginx após substituir o placeholder:
 
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
