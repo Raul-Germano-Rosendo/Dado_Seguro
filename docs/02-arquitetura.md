@@ -3,16 +3,16 @@
 ## Visão lógica
 
 ```text
-Usuário / navegador
-        | HTTPS (após domínio e certificado)
-        v
-Entrada pública controlada (EC2/Nginx existente; configuração atual a confirmar)
-        | VPN para administração e comunicação privada
-        v
-Frontend / API (a implementar) ---> Banco de dados (a projetar, acesso privado)
+Navegador
+   | interface React/Vite (modo demo hoje)
+   v
+Nginx / entrada web (configuração e publicação a confirmar)
+   | API a implementar
+   v
+Backend em Docker Compose ---> PostgreSQL 16 em rede Docker privada
 ```
 
-O desenho da aplicação continua conceitual, pois frontend, API e banco não estão neste repositório. A infraestrutura AWS, porém, tem quatro EC2 registradas como em execução no snapshot de 22/11/2026. Relatos anteriores descrevem Nginx no frontend distribuindo HTTP entre dois backends com uma instância de backup e OpenVPN no frontend. Consulte [Estado da implantação](09-estado-implantacao.md): esses relatos ainda precisam de validação operacional atual.
+O frontend React/Vite foi integrado à `main` e oferece uma demonstração com dados em memória. Seu contrato de API está em `frontend/src/services/api.ts`. Em 23/11/2026, Docker e PostgreSQL 16 foram iniciados na Backend 1; o PostgreSQL não publica porta no host. A API ainda precisa ser implementada e adicionada ao mesmo Compose para conectar ao banco pelo endereço `db:5432`. A topologia AWS mais ampla e o Nginx continuam descritos em [Estado da implantação](09-estado-implantacao.md), distinguindo relatos históricos de observações atuais.
 
 ## Fluxos esperados
 
@@ -28,10 +28,11 @@ O desenho da aplicação continua conceitual, pois frontend, API e banco não es
 | AWS VPC/EC2 | Hospedar componentes selecionados | Quatro EC2 em execução no snapshot; topologia atual a confirmar |
 | Security Group | Filtrar tráfego | Modelo incluso |
 | VPN | Acesso administrativo privado | Modelos OpenVPN inclusos |
-| Nginx | Proxy reverso/entrada web | Exemplo incluso, upstream placeholder |
-| Frontend e API | Interface e regras do sistema | Futuro |
-| Banco de dados | Persistência | Futuro |
-| Docker | Empacotamento e execução | Futuro |
+| Nginx | Proxy reverso/entrada web | Modelo de proxy incluso; rota da API ainda a configurar |
+| Frontend | Interface web | React/Vite no repositório; demonstração usa mock |
+| API | Regras e acesso a dados | A implementar conforme contrato do frontend |
+| Banco de dados | Persistência | PostgreSQL 16 em contêiner; sem esquema aplicado |
+| Docker | Empacotamento e execução | Engine/Compose instalados na Backend 1; serviço descrito no guia de deploy |
 
 ## Decisões em aberto
 

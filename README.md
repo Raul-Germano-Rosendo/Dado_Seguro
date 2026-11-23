@@ -2,7 +2,7 @@
 
 Documentação de infraestrutura e planejamento técnico do projeto acadêmico **Dado Seguro**.
 
-> **Estado atual:** há quatro instâncias EC2 em execução no snapshot fornecido em 22/11/2026. O histórico do projeto também registra Nginx como proxy/balanceador e OpenVPN no frontend, mas isso precisa ser confirmado no ambiente antes de depender dos serviços. O repositório ainda é principalmente documentação e modelos: não contém a aplicação, banco de dados nem implantação reproduzível. Consulte [Estado da implantação](docs/09-estado-implantacao.md) para separar observações atuais de informações históricas.
+> **Estado atual:** o frontend React/Vite está no repositório e tem modo de demonstração com dados fictícios. Em 23/11/2026, Docker e PostgreSQL 16 foram instalados em uma instância backend; o banco ainda não tem a API nem o esquema funcional. Consulte [Estado da implantação](docs/09-estado-implantacao.md) e [Deploy com Docker e PostgreSQL](docs/10-deploy-docker-postgresql.md) para o estado confirmado e os próximos passos.
 
 ## Conteúdo
 
@@ -16,6 +16,7 @@ Documentação de infraestrutura e planejamento técnico do projeto acadêmico *
 - [Plano de implementação](docs/07-roadmap.md)
 - [Referências e decisões](docs/08-referencias.md)
 - [Estado da implantação e pendências](docs/09-estado-implantacao.md)
+- [Deploy com Docker e PostgreSQL](docs/10-deploy-docker-postgresql.md)
 - [Configurações de exemplo](config/README.md)
 
 ## Árvore do repositório
@@ -24,6 +25,8 @@ Documentação de infraestrutura e planejamento técnico do projeto acadêmico *
 Redes_Jean/
 ├── README.md
 ├── .gitignore
+├── frontend/ (interface React/Vite)
+├── deploy/ (script de instalação do backend e PostgreSQL)
 ├── docs/ (guias segmentados por assunto)
 └── config/
     ├── aws/ (EC2 e regras de rede)
@@ -31,7 +34,18 @@ Redes_Jean/
     └── vpn/ (modelos OpenVPN)
 ```
 
-Leia primeiro `docs/` e `config/README.md`. Os arquivos `.example` são modelos para adaptação. Nunca versione chaves privadas, senhas, tokens ou dados pessoais.
+Leia primeiro `docs/` e `config/README.md`. O frontend inicia em modo mock; as configurações `.example` são modelos para adaptação. Nunca versione chaves privadas, senhas, tokens ou dados pessoais.
+
+## Executar a demonstração web
+
+```bash
+cd frontend
+npm ci
+cp .env.example .env
+npm run dev
+```
+
+O frontend usa `VITE_USE_MOCK=true` para demonstrar o fluxo sem API ou banco conectado. O contrato esperado da API está em `frontend/src/services/api.ts`; o modo mock não persiste dados após reiniciar a página.
 
 ## Referências usadas
 

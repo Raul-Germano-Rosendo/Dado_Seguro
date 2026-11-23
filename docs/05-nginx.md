@@ -4,4 +4,4 @@ O Nginx pode receber requisições web e encaminhá-las a um serviço interno, e
 
 `config/nginx/dado-seguro.conf.example` é um exemplo HTTP ilustrativo, com domínio e serviço placeholders. Em produção, configure TLS com certificado válido, redirecionamento HTTP→HTTPS, cabeçalhos revisados, limites e logs. CORS deve ser definido no ponto apropriado, com origens explícitas.
 
-Como frontend e API ainda não existem, `127.0.0.1:3000` é somente um placeholder. Ajuste quando a arquitetura estiver definida; não configure proxy para serviços inexistentes.
+O frontend React/Vite existe no repositório, mas ainda não está conectado a uma API implantada. Por isso, `127.0.0.1:3000` continua sendo apenas um placeholder. Configure o proxy da API depois que o serviço backend estiver implementado e acessível; não aponte Nginx para um serviço inexistente.

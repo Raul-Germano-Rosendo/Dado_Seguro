@@ -14,13 +14,14 @@
 
 ## 3 — Aplicação
 
-- Escolher stack e implementar frontend e API.
-- Definir autenticação, autorização e política CORS para origens reais.
-- Projetar banco, migrações, backups e credenciais.
+- Concluir os requisitos funcionais e implementar a API conforme o contrato em `frontend/src/services/api.ts`.
+- Conectar a API ao PostgreSQL no Compose e criar esquema/migrações.
+- Implementar autenticação, autorização, upload/download e auditoria; configurar CORS/HTTPS para a origem publicada.
+- Definir backup externo e credenciais de aplicação; nunca compartilhar a senha inicial do banco.
 
 ## 4 — Implantação
 
-- Avaliar Docker/Compose e separar configurações de desenvolvimento e implantação.
+- Completar a implantação da API no Docker Compose já preparado na Backend 1.
 - Configurar Nginx, domínio e TLS; decidir se HAProxy ou serviço gerenciado é necessário.
 - Automatizar implantação e documentar rollback.
 
@@ -30,6 +31,6 @@
 - Verificar logs, atualização, backup/restauração e custos.
 - Registrar evidências da implantação real sem expor dados sensíveis.
 
-Estas etapas são planejamento. A documentação atual não afirma que os componentes estejam implantados.
+Estas etapas são planejamento para a API e para a operação completa. O estado efetivamente implantado está em [Estado da implantação](09-estado-implantacao.md).
 
-> Atualização: quatro EC2 foram observadas como `Executando` em 22/11/2026. Os passos acima continuam pendentes para a aplicação e para confirmar a configuração operacional. Veja [Estado da implantação](09-estado-implantacao.md).
+> Atualização: o frontend está no repositório e Docker/PostgreSQL foram implantados em uma instância backend em 23/11/2026. A API, esquema, migrações, backup externo e integração com Nginx continuam pendentes.
