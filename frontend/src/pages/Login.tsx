@@ -29,7 +29,7 @@ export default function Login({ onLogin }: { onLogin: (u: User) => void }) {
         <h1>Dado Seguro</h1>
         <p>Envie, guarde e compartilhe arquivos com controle de acesso e registro de cada ação.</p>
         <ul>
-          <li>Arquivos criptografados</li>
+          <li>Acesso controlado por usuário</li>
           <li>Permissões por pessoa e equipe</li>
           <li>Auditoria de uploads e downloads</li>
         </ul>
@@ -39,6 +39,9 @@ export default function Login({ onLogin }: { onLogin: (u: User) => void }) {
         <form className="login-card" onSubmit={handleSubmit}>
           <h2>Entrar</h2>
           <p className="muted">Use sua conta autorizada para acessar os arquivos.</p>
+          {!isMock && window.location.protocol !== 'https:' && (
+            <p className="hint warning" role="alert">Acesso de demonstração por HTTP: use apenas a senha temporária e arquivos fictícios. Não envie documentos reais.</p>
+          )}
 
           <label htmlFor="username">Usuário</label>
           <input id="username" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required disabled={loading} />

@@ -68,7 +68,7 @@ export default function Dashboard({ user, onLogout }: { user: User; onLogout: ()
 
   const visible = useMemo(() => files.filter((f) => f.name.toLowerCase().includes(query.toLowerCase())), [files, query])
   const total = files.reduce((s, f) => s + f.size, 0)
-  const encrypted = files.filter((f) => f.encrypted).length
+  const shared = files.filter((f) => f.access === 'equipe').length
   const denied = audit.filter((a) => !a.ok).length
   const canDelete = (f: FileItem) => user.role === 'admin' || f.owner === user.username
 
@@ -85,10 +85,14 @@ export default function Dashboard({ user, onLogout }: { user: User; onLogout: ()
       <main className="content">
         <h1>Arquivos</h1>
 
+        {!isMock && window.location.protocol !== 'https:' && (
+          <p className="banner warning" role="alert">Demonstração HTTP: use somente arquivos fictícios. O tráfego ainda não está protegido por HTTPS.</p>
+        )}
+
         <section className="stats" aria-label="Resumo">
           <div className="stat"><span>Arquivos</span><strong>{files.length}</strong></div>
           <div className="stat"><span>Espaço usado</span><strong>{fmtSize(total)}</strong></div>
-          <div className="stat"><span>Criptografados</span><strong>{encrypted}/{files.length}</strong></div>
+          <div className="stat"><span>Compartilhados com a equipe</span><strong>{shared}</strong></div>
           <div className={`stat ${denied ? 'warn' : ''}`}><span>Acessos recusados</span><strong>{denied}</strong></div>
         </section>
 
@@ -130,7 +134,7 @@ export default function Dashboard({ user, onLogout }: { user: User; onLogout: ()
                     <tbody>
                       {visible.map((f) => (
                         <tr key={f.id}>
-                          <td className="name">{f.name}{f.encrypted && <span title="Criptografado"> 🔒</span>}</td>
+                          <td className="name">{f.name}</td>
                           <td>{fmtSize(f.size)}</td>
                           <td>{f.owner}</td>
                           <td><span className={`pill ${f.access}`}>{f.access === 'equipe' ? 'Equipe' : 'Privado'}</span></td>
@@ -150,13 +154,8 @@ export default function Dashboard({ user, onLogout }: { user: User; onLogout: ()
 
           <aside className="col side">
             <section className="panel">
-              <h2>Conexão SFTP</h2>
-              <p className="muted">Para enviar arquivos grandes pelo seu cliente SFTP.</p>
-              <dl className="kv">
-                <dt>Servidor</dt><dd>{import.meta.env.VITE_SFTP_HOST || 'a definir'}</dd>
-                <dt>Porta</dt><dd>22</dd>
-                <dt>Autenticação</dt><dd>Chave SSH</dd>
-              </dl>
+              <h2>Armazenamento</h2>
+              <p className="muted">Arquivos enviados ficam no volume da instância Backend. O acesso SFTP não está configurado nesta demonstração.</p>
             </section>
 
             <section className="panel">

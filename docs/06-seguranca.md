@@ -10,10 +10,10 @@
 
 ## CORS
 
-CORS é uma política do navegador que controla quais origens podem ler respostas de uma API. Não é autenticação nem firewall. O frontend React/Vite já existe, mas sua origem de produção e a API ainda não estão implantadas. Quando a API for criada, listar somente origens autorizadas (esquema, host e porta), métodos e cabeçalhos necessários. Evitar `*` com credenciais. Tratar preflight `OPTIONS` e não refletir origens arbitrárias recebidas no cabeçalho `Origin`.
+CORS é uma política do navegador que controla quais origens podem ler respostas de uma API. Não é autenticação nem firewall. Na implantação atual, o frontend chama a API no mesmo host por `/api`, sem CORS entre origens. Se a API for publicada em host distinto, liste explicitamente origens, métodos e cabeçalhos necessários. Evite `*` com credenciais e não reflita origens arbitrárias recebidas no cabeçalho `Origin`.
 
-Como a URL publicada do frontend e a API ainda não existem, não há política CORS executável neste repositório.
+O acesso web publicado ainda é HTTP, sem TLS. O cookie de sessão é HttpOnly e SameSite=Lax, mas HTTP não protege credenciais, cookies nem arquivos contra interceptação na rede. A API não criptografa os conteúdos armazenados; arquivos ficam em volume local. Use somente dados fictícios e uma senha de teste. Não reutilize senhas nem suba documentos reais.
 
 ## Dados e privacidade
 
-Antes de escolher banco ou tabelas, documentar dados coletados, finalidade, retenção, acesso e proteção. Usar dados fictícios em desenvolvimento e não registrar informações pessoais ou segredos em issues, commits ou capturas de tela.
+O banco contém usuário, sessões, metadados dos arquivos e eventos básicos de auditoria. O conteúdo está em armazenamento local. O administrador inicial é criado da senha aleatória mantida fora do Git em `/opt/dado-seguro/.admin_password`. Não há cadastro de usuários ou troca de senha na interface atual. Usar dados fictícios em desenvolvimento e não registrar informações pessoais ou segredos em issues, commits ou capturas de tela.

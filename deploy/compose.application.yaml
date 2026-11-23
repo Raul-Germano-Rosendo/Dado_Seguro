@@ -1,0 +1,57 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      NODE_OPTIONS: --max-old-space-size=160
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: dadoseguro
+      DB_USER: dadoseguro_app
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+      SESSION_SECRET_FILE: /run/secrets/session_secret
+      COOKIE_SECURE: "false"
+      UPLOAD_DIR: /app/uploads
+    secrets:
+      - db_password
+      - admin_password
+      - session_secret
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+secrets:
+  db_password:
+    file: ./.db_password
+  admin_password:
+    file: ./.admin_password
+  session_secret:
+    file: ./.session_secret
+
+volumes:
+  uploads_data:

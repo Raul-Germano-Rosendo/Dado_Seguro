@@ -3,16 +3,18 @@
 ## Visão lógica
 
 ```text
-Navegador
-   | interface React/Vite (modo demo hoje)
-   v
-Nginx / entrada web (configuração e publicação a confirmar)
-   | API a implementar
-   v
-Backend em Docker Compose ---> PostgreSQL 16 em rede Docker privada
+Navegador --HTTP--> Nginx Frontend (React/Vite)
+                         | /api
+                         v
+                  Nginx Backend (proxy)
+                         | loopback:3000
+                         v
+                  API em Docker Compose ---> PostgreSQL 16
+                         |                      rede Docker privada
+                         +--> volume local de arquivos
 ```
 
-O frontend React/Vite foi integrado à `main` e oferece uma demonstração com dados em memória. Seu contrato de API está em `frontend/src/services/api.ts`. Em 23/11/2026, Docker e PostgreSQL 16 foram iniciados na Backend 1; o PostgreSQL não publica porta no host. A API ainda precisa ser implementada e adicionada ao mesmo Compose para conectar ao banco pelo endereço `db:5432`. A topologia AWS mais ampla e o Nginx continuam descritos em [Estado da implantação](09-estado-implantacao.md), distinguindo relatos históricos de observações atuais.
+Frontend React/Vite, API Express e PostgreSQL 16 foram integrados. O Nginx frontend serve os arquivos estáticos e encaminha `/api` para o Nginx da Backend 1; este envia ao processo API em `127.0.0.1:3000`. A API acessa o banco via `db:5432` dentro da rede privada do Compose. O banco não publica porta no host. Arquivos são persistidos em volume local Docker. A demonstração usa HTTP e uma única instância backend; não oferece TLS, alta disponibilidade ou backup externo.
 
 ## Fluxos esperados
 
@@ -28,11 +30,11 @@ O frontend React/Vite foi integrado à `main` e oferece uma demonstração com d
 | AWS VPC/EC2 | Hospedar componentes selecionados | Quatro EC2 em execução no snapshot; topologia atual a confirmar |
 | Security Group | Filtrar tráfego | Modelo incluso |
 | VPN | Acesso administrativo privado | Modelos OpenVPN inclusos |
-| Nginx | Proxy reverso/entrada web | Modelo de proxy incluso; rota da API ainda a configurar |
-| Frontend | Interface web | React/Vite no repositório; demonstração usa mock |
-| API | Regras e acesso a dados | A implementar conforme contrato do frontend |
-| Banco de dados | Persistência | PostgreSQL 16 em contêiner; sem esquema aplicado |
-| Docker | Empacotamento e execução | Engine/Compose instalados na Backend 1; serviço descrito no guia de deploy |
+| Nginx | Servir frontend e encaminhar `/api` | Configuração implantada e exemplos versionados |
+| Frontend | Interface web | React/Vite compilado com API real |
+| API | Regras e acesso a dados | Express/TypeScript em contêiner |
+| Banco de dados | Persistência | PostgreSQL 16; esquema básico inicializado pela API |
+| Docker | Empacotamento e execução | Compose executa API e banco na Backend 1 |
 
 ## Decisões em aberto
 

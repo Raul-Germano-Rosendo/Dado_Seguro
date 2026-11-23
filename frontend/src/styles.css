@@ -41,6 +41,7 @@ input, select { font: inherit; padding: .65rem .8rem; border: 1px solid var(--li
 input:focus, select:focus { outline: none; border-color: var(--blue-500); box-shadow: 0 0 0 3px var(--blue-100); }
 .error { color: var(--danger); margin: .9rem 0 0; font-size: .9rem; }
 .hint { margin: 1rem 0 0; font-size: .85rem; color: var(--muted); background: var(--blue-50); padding: .6rem .8rem; border-radius: 10px; }
+.hint.warning, .banner.warning { background: #fff3cd; color: #684d03; border: 1px solid #ffecb5; }
 
 /* Dashboard */
 .topbar { display: flex; justify-content: space-between; align-items: center; padding: .75rem 2rem; background: var(--white); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }

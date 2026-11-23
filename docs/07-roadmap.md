@@ -12,17 +12,17 @@
 - Registrar a configuração OpenVPN efetivamente usada, endereçamento, certificados, rotas e método de administração sem publicar segredos.
 - Revisar Security Groups e firewall do sistema.
 
-## 3 — Aplicação
+## 3 — Aplicação (base implantada)
 
-- Concluir os requisitos funcionais e implementar a API conforme o contrato em `frontend/src/services/api.ts`.
-- Conectar a API ao PostgreSQL no Compose e criar esquema/migrações.
-- Implementar autenticação, autorização, upload/download e auditoria; configurar CORS/HTTPS para a origem publicada.
-- Definir backup externo e credenciais de aplicação; nunca compartilhar a senha inicial do banco.
+- API, login, sessão, autorização básica, upload/download e auditoria implementados conforme `frontend/src/services/api.ts`.
+- API conectada ao PostgreSQL no Compose; tabelas iniciais são garantidas na inicialização.
+- Configurar TLS para a origem publicada e permitir gestão segura de contas/senhas.
+- Criar migrações versionadas e estratégia de backup externo, com teste de restauração.
 
 ## 4 — Implantação
 
-- Completar a implantação da API no Docker Compose já preparado na Backend 1.
-- Configurar Nginx, domínio e TLS; decidir se HAProxy ou serviço gerenciado é necessário.
+- API e PostgreSQL implantados no Docker Compose da Backend 1; frontend e proxy publicados.
+- Configurar domínio e TLS; decidir se HAProxy ou serviço gerenciado é necessário.
 - Automatizar implantação e documentar rollback.
 
 ## 5 — Operação
@@ -31,6 +31,6 @@
 - Verificar logs, atualização, backup/restauração e custos.
 - Registrar evidências da implantação real sem expor dados sensíveis.
 
-Estas etapas são planejamento para a API e para a operação completa. O estado efetivamente implantado está em [Estado da implantação](09-estado-implantacao.md).
+Estas etapas registram o que falta para sair da demonstração. O estado efetivamente implantado está em [Estado da implantação](09-estado-implantacao.md).
 
-> Atualização: o frontend está no repositório e Docker/PostgreSQL foram implantados em uma instância backend em 23/11/2026. A API, esquema, migrações, backup externo e integração com Nginx continuam pendentes.
+> Atualização: frontend, API, PostgreSQL e Nginx foram integrados para demonstração em 23/11/2026. TLS, migrações, backup externo e restauração testada continuam pendentes.

@@ -2,6 +2,9 @@
 .env.*
 !.env.example
 .db_password
+.admin_password
+.session_secret
+uploads/
 *.sql.gz
 *.dump
 *.pem

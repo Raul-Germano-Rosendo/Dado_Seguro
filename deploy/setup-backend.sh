@@ -60,13 +60,19 @@ systemctl enable --now docker
 APP_DIR="/opt/dado-seguro"
 COMPOSE_FILE="${APP_DIR}/compose.yaml"
 DB_SECRET="${APP_DIR}/.db_password"
+ADMIN_SECRET="${APP_DIR}/.admin_password"
+SESSION_SECRET="${APP_DIR}/.session_secret"
 install -d -m 0700 "${APP_DIR}"
 umask 077
 
-if [[ ! -f "${DB_SECRET}" ]]; then
-  openssl rand -hex 32 > "${DB_SECRET}"
-fi
-chmod 0600 "${DB_SECRET}"
+for secret_file in "${DB_SECRET}" "${ADMIN_SECRET}" "${SESSION_SECRET}"; do
+  if [[ ! -f "${secret_file}" ]]; then
+    openssl rand -hex 32 > "${secret_file}"
+  fi
+  # The parent directory is root-only; mounted Compose secrets must be
+  # readable by the non-root API container.
+  chmod 0644 "${secret_file}"
+done
 
 if [[ -e "${COMPOSE_FILE}" ]]; then
   if ! grep -q 'DADOSEGURO_MANAGED_POSTGRES' "${COMPOSE_FILE}"; then
