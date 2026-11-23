@@ -2,7 +2,7 @@
 
 Documentação de infraestrutura e planejamento técnico do projeto acadêmico **Dado Seguro**.
 
-> **Estado atual:** este repositório documenta a base estudada e fornece modelos de configuração. Frontend, banco de dados e Docker ainda não foram implementados. Os exemplos AWS/VPN são modelos: não contêm credenciais, chaves, endereços reais nem comprovam implantação ativa.
+> **Estado atual:** há quatro instâncias EC2 em execução no snapshot fornecido em 22/11/2026. O histórico do projeto também registra Nginx como proxy/balanceador e OpenVPN no frontend, mas isso precisa ser confirmado no ambiente antes de depender dos serviços. O repositório ainda é principalmente documentação e modelos: não contém a aplicação, banco de dados nem implantação reproduzível. Consulte [Estado da implantação](docs/09-estado-implantacao.md) para separar observações atuais de informações históricas.
 
 ## Conteúdo
 
@@ -15,6 +15,7 @@ Documentação de infraestrutura e planejamento técnico do projeto acadêmico *
 - [Segurança e CORS](docs/06-seguranca.md)
 - [Plano de implementação](docs/07-roadmap.md)
 - [Referências e decisões](docs/08-referencias.md)
+- [Estado da implantação e pendências](docs/09-estado-implantacao.md)
 - [Configurações de exemplo](config/README.md)
 
 ## Árvore do repositório
