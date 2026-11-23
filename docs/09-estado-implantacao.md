@@ -12,6 +12,8 @@ O snapshot abaixo foi fornecido pelo responsável pelo projeto em **22/11/2026 �
 
 O snapshot mostra monitoramento detalhado desabilitado. IDs de instância, nomes de recursos, grupos de segurança, IPs e DNS foram omitidos deste inventário publicado. Consulte o console AWS autorizado para esses dados.
 
+Em verificação remota separada, a Backend 1 foi identificada como Ubuntu 26.04; Docker/Compose e PostgreSQL 16 foram instalados nela em 23/11/2026. O banco passou no health check, não tem porta publicada no host e usa um volume local. Consulte [Deploy com Docker e PostgreSQL](10-deploy-docker-postgresql.md) para comandos e limites.
+
 ## Arquitetura registrada anteriormente
 
 O contexto técnico consolidado em 22/11/2026 descreve uma VPC, uma subnet e endereços privados para cada instância. Os detalhes de rede foram omitidos deste inventário publicado; confirme CIDRs, subnets e endereços privados no console/hosts antes de usá-los, pois não vieram no snapshot atual.
@@ -26,7 +28,10 @@ O mesmo contexto informa que o frontend já foi configurado com Nginx e OpenVPN;
 - Decisão e documentação do acesso VPN à VPC: rotas do cliente, encaminhamento IP, regras `FORWARD`, NAT ou rotas de retorno, Security Groups, NACLs e persistência após reinicialização.
 - Documentação das subnets e route tables atuais, endereços privados atuais, e regras de entrada/saída dos Security Groups.
 - Procedimento documentado de backup e restauração testada; a existência de uma EC2 chamada “Backup” não prova que os dados ou configurações tenham cópias restauráveis.
-- Implementação da aplicação (frontend/API), especificação dos requisitos e do modelo de dados, banco de dados e estratégia de implantação. O repositório contém apenas documentos e exemplos de configuração.
+- Implementação da API conforme o contrato do frontend em `frontend/src/services/api.ts`; o frontend React/Vite existe, mas continua em modo demonstração/mock.
+- Modelo de dados, esquema e migrações PostgreSQL; o contêiner do banco está ativo, porém ainda sem esquema funcional da aplicação.
+- Backup externo automatizado e teste de restauração; o volume atual é somente persistência local.
+- Implantação do frontend e integração da API no Nginx, além da configuração de origem/CORS e TLS.
 - Automatização segura e reproduzível da infraestrutura e da implantação, além de monitoramento, alertas, atualização e plano de rollback.
 
 ## Próxima coleta recomendada

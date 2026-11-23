@@ -10,9 +10,9 @@
 
 ## CORS
 
-CORS é uma política do navegador que controla quais origens podem ler respostas de uma API. Não é autenticação nem firewall. Quando frontend e API existirem, listar somente origens autorizadas (esquema, host e porta), métodos e cabeçalhos necessários. Evitar `*` com credenciais. Tratar preflight `OPTIONS` e não refletir origens arbitrárias recebidas no cabeçalho `Origin`.
+CORS é uma política do navegador que controla quais origens podem ler respostas de uma API. Não é autenticação nem firewall. O frontend React/Vite já existe, mas sua origem de produção e a API ainda não estão implantadas. Quando a API for criada, listar somente origens autorizadas (esquema, host e porta), métodos e cabeçalhos necessários. Evitar `*` com credenciais. Tratar preflight `OPTIONS` e não refletir origens arbitrárias recebidas no cabeçalho `Origin`.
 
-Como URLs de frontend e API ainda não existem, não há política CORS executável neste repositório.
+Como a URL publicada do frontend e a API ainda não existem, não há política CORS executável neste repositório.
 
 ## Dados e privacidade
 

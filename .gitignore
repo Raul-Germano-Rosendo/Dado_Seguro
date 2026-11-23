@@ -1,6 +1,9 @@
 .env
 .env.*
 !.env.example
+.db_password
+*.sql.gz
+*.dump
 *.pem
 *.key
 *.p12
