@@ -31,3 +31,5 @@
 - Registrar evidências da implantação real sem expor dados sensíveis.
 
 Estas etapas são planejamento. A documentação atual não afirma que os componentes estejam implantados.
+
+> Atualização: quatro EC2 foram observadas como `Executando` em 22/11/2026. Os passos acima continuam pendentes para a aplicação e para confirmar a configuração operacional. Veja [Estado da implantação](09-estado-implantacao.md).

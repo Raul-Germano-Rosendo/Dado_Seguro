@@ -20,9 +20,9 @@ A finalidade funcional detalhada, os tipos de dados tratados e os perfis de usu�
 | Componente | Estado |
 |---|---|
 | Documentação e estrutura | Preparada neste repositório |
-| AWS / EC2 | A configurar; modelo não representa recurso existente |
-| VPN e certificados | OpenVPN e EasyRSA utilizados; modelos genéricos, materiais criptográficos reais não incluídos |
-| Nginx | Modelo genérico; upstream ainda não existe |
+| AWS / EC2 | Quatro instâncias `t3.micro` foram observadas em execução no snapshot de 22/11/2026; detalhes em [Estado da implantação](09-estado-implantacao.md) |
+| VPN e certificados | OpenVPN e EasyRSA utilizados anteriormente; saúde atual e acesso VPN à VPC precisam ser confirmados |
+| Nginx | Configuração histórica de proxy/balanceamento com dois primários e um backup; validar serviços e endereços atuais |
 | Frontend | Futuro |
 | Backend / API | Não especificado neste material |
 | Banco de dados | Futuro; tecnologia e esquema pendentes |

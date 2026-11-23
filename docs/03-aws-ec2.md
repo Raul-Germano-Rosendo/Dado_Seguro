@@ -1,6 +1,10 @@
 # 3. AWS e EC2
 
-## Planejamento
+## Ambiente registrado
+
+O snapshot de 22/11/2026 registra quatro instâncias EC2 `t3.micro` em execução em `us-east-1c`. Nomes, IDs e endereços públicos fornecidos estão em [Estado da implantação](09-estado-implantacao.md). Confirme estado, endereços privados, subnets, volumes, tags e regras atuais no console AWS antes de operar. A tabela não substitui inventário ao vivo.
+
+## Próximos passos de infraestrutura
 
 1. Escolher região e confirmar custos, limites e disponibilidade.
 2. Criar VPC e planejar CIDRs sem sobreposição com rede local e faixa VPN.
