@@ -2,7 +2,7 @@
 
 Documentação de infraestrutura e planejamento técnico do projeto acadêmico **Dado Seguro**.
 
-> **Estado atual:** o frontend React/Vite está no repositório e tem modo de demonstração com dados fictícios. Em 23/11/2026, Docker e PostgreSQL 16 foram instalados em uma instância backend; o banco ainda não tem a API nem o esquema funcional. Consulte [Estado da implantação](docs/09-estado-implantacao.md) e [Deploy com Docker e PostgreSQL](docs/10-deploy-docker-postgresql.md) para o estado confirmado e os próximos passos.
+> **Estado atual:** frontend React/Vite, API Node.js/TypeScript e PostgreSQL 16 foram integrados e implantados para demonstração. A interface pública encaminha `/api` pelo Nginx para a API; o PostgreSQL não publica porta externa. O ambiente está em HTTP, usa um único backend e não deve receber dados reais. Consulte [Estado da implantação](docs/09-estado-implantacao.md), [deploy](docs/10-deploy-docker-postgresql.md) e [segurança](docs/06-seguranca.md).
 
 ## Conteúdo
 
@@ -16,7 +16,7 @@ Documentação de infraestrutura e planejamento técnico do projeto acadêmico *
 - [Plano de implementação](docs/07-roadmap.md)
 - [Referências e decisões](docs/08-referencias.md)
 - [Estado da implantação e pendências](docs/09-estado-implantacao.md)
-- [Deploy com Docker e PostgreSQL](docs/10-deploy-docker-postgresql.md)
+- [Deploy com Docker, API e PostgreSQL](docs/10-deploy-docker-postgresql.md)
 - [Configurações de exemplo](config/README.md)
 
 ## Árvore do repositório
@@ -26,7 +26,8 @@ Redes_Jean/
 ├── README.md
 ├── .gitignore
 ├── frontend/ (interface React/Vite)
-├── deploy/ (script de instalação do backend e PostgreSQL)
+├── backend/ (API Node.js/TypeScript)
+├── deploy/ (instalação e publicação via Docker Compose)
 ├── docs/ (guias segmentados por assunto)
 └── config/
     ├── aws/ (EC2 e regras de rede)
@@ -45,7 +46,11 @@ cp .env.example .env
 npm run dev
 ```
 
-O frontend usa `VITE_USE_MOCK=true` para demonstrar o fluxo sem API ou banco conectado. O contrato esperado da API está em `frontend/src/services/api.ts`; o modo mock não persiste dados após reiniciar a página.
+Para modo local sem backend, use `VITE_USE_MOCK=true` no `frontend/.env`. Para apontar a interface a uma API, configure `VITE_USE_MOCK=false` e `VITE_API_URL=/api`, então gere a versão de produção com `npm run build`. O contrato está em `frontend/src/services/api.ts`. A demonstração implantada salva metadados no PostgreSQL e arquivos em volume local Docker.
+
+## Executar a stack implantada
+
+Veja [Deploy com Docker, API e PostgreSQL](docs/10-deploy-docker-postgresql.md) para preparar a instância, compilar e publicar a API, ativar o Nginx e operar o banco. A senha inicial de demonstração é gerada fora do repositório em `/opt/dado-seguro/.admin_password` e deve ser obtida diretamente na instância. Não há cadastro de usuários na primeira versão.
 
 ## Referências usadas
 

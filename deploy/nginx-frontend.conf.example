@@ -1,0 +1,24 @@
+# Substitua BACKEND_PRIVATE_IP pelo IP privado atual do Backend 1.
+# Este bloco substitui o proxy de demonstração anterior na instância Frontend.
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    root /var/www/dadoseguro;
+    index index.html;
+    client_max_body_size 26m;
+
+    location /api/ {
+        proxy_pass http://BACKEND_PRIVATE_IP/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Host api.dadoseguro.internal;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
