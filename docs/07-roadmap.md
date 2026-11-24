@@ -10,6 +10,7 @@
 
 - Desenhar VPC, sub-redes, CIDRs e rotas.
 - Registrar a configuração OpenVPN efetivamente usada, endereçamento, certificados, rotas e método de administração sem publicar segredos.
+- Restringir a aplicação à VPN e comprovar bloqueio pelo IP público.
 - Revisar Security Groups e firewall do sistema.
 
 ## 3 — Aplicação (base implantada)
@@ -33,4 +34,4 @@
 
 Estas etapas registram o que falta para sair da demonstração. O estado efetivamente implantado está em [Estado da implantação](09-estado-implantacao.md).
 
-> Atualização: frontend, API, PostgreSQL, SFTP e HTTPS foram integrados para demonstração em 23/11/2026. O schema inicial PostgreSQL agora está versionado em `backend/db/init/001_initial_schema.sql`; alterações futuras devem receber novas migrações. Backup externo e restauração testada continuam pendentes.
+> Atualização: frontend, API, PostgreSQL, SFTP e HTTPS foram integrados para demonstração em 23/11/2026. O schema inicial é aplicado a partir de SQL montado no PostgreSQL, e a persistência foi conferida após parar/reiniciar os containers. O acesso via VPN e o bloqueio público estão sendo ativados em 24/11/2026. Balanceamento/failover, backup externo e restauração testada continuam pendentes.

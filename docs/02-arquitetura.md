@@ -3,18 +3,20 @@
 ## Visão lógica
 
 ```text
-Navegador --HTTPS--> Nginx Frontend (React/Vite)
-                         | /api
-                         v
-                  Nginx Backend (proxy)
-                         | loopback:3000
-                         v
-                  API em Docker Compose ---> PostgreSQL 16
-                         |                      rede Docker privada
-                         +--> volume local de arquivos
+Cliente OpenVPN (10.8.0.0/24) --túnel--> Nginx Frontend (IP privado)
+                                             | /api
+                                             v
+                                      Nginx Backend (proxy)
+                                             | loopback:3000
+                                             v
+                                      API em Docker Compose ---> PostgreSQL 16
+                                             |                      rede Docker privada
+                                             +--> volume local de arquivos
+
+Cliente fora da VPN --IP público--> Nginx Frontend (403)
 ```
 
-Frontend React/Vite, API Express e PostgreSQL 16 foram integrados. O Nginx frontend serve os arquivos estáticos e encaminha `/api` para o Nginx da Backend 1; este envia ao processo API em `127.0.0.1:3000`. A API acessa o banco via `db:5432` dentro da rede privada do Compose. O banco não publica porta no host. Arquivos são persistidos em volume local Docker. O TLS termina no frontend; o caminho interno na VPC continua HTTP. A demonstração usa uma única instância backend e não oferece alta disponibilidade ou backup externo.
+Na branch `test1.0`, o OpenVPN entrega uma rota `/32` para o IP privado da Frontend. O Nginx libera a aplicação somente para clientes `10.8.0.0/24`; acesso pelo IP público, fora do túnel, recebe `403`. O navegador usa HTTP dentro do túnel criptografado. O Nginx frontend encaminha `/api` ao Nginx da Backend 1, que envia ao processo API em `127.0.0.1:3000`. A API acessa `db:5432` na rede privada do Compose. PostgreSQL não publica porta no host e mantém dados em volume local Docker. A configuração atual ainda usa uma Backend 1 e não oferece alta disponibilidade ou backup externo.
 
 ## Fluxos esperados
 

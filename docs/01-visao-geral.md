@@ -31,4 +31,4 @@ O escopo atual é uma demonstração: login de administrador, listagem, upload, 
 
 ## Premissas e limites
 
-É uma implantação de demonstração em uma única instância backend, com HTTPS público e Certbot para renovação do certificado de IP. SFTP está limitado a uma pasta de recebimento separada. Cópias externas, restauração testada e alta disponibilidade permanecem pendentes. Não inclua dados reais ou credenciais neste repositório.
+Na branch `test1.0`, a aplicação é restrita à faixa OpenVPN e acessada pelo IP privado da Frontend; o IP público retorna 403 fora do túnel. O acesso privado usa HTTP encapsulado no OpenVPN. PostgreSQL e API executam em Docker Compose, com schema SQL versionado. SFTP está limitado a uma pasta separada. O balanceamento/failover e os backups externos ainda serão preparados para as provas. Não inclua dados reais ou credenciais neste repositório.

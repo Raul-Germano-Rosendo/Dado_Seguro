@@ -14,6 +14,8 @@ O snapshot mostra monitoramento detalhado desabilitado. IDs de instância, nomes
 
 Em verificação remota em 23/11/2026, a Backend 1 Ubuntu 26.04 executa Docker/Compose, PostgreSQL 16 e API Node.js/TypeScript. A API está saudável, conectada ao banco e publicada somente em loopback; PostgreSQL não publica porta no host. Na Frontend, Nginx serve React e HTTPS com certificado Let's Encrypt de IP; HTTP redireciona para HTTPS, e o timer Certbot está ativo. O health check público `https://IP_PUBLICO_FRONTEND/api/healthz` respondeu 200. A regra TCP 443 já existia no Security Group Frontend. Na Backend 1, o usuário SFTP `dado-sftp` está restrito a uma pasta chroot, sem shell e sem senha; o teste de envio/recebimento foi aprovado. O conteúdo SFTP fica separado dos arquivos cadastrados pelo painel. Veja [deploy](10-deploy-docker-postgresql.md).
 
+Em 24/11/2026, o schema `backend/db/init/001_initial_schema.sql` foi mapeado como somente leitura em `/docker-entrypoint-initdb.d` e executado sem apagar dados; as tabelas `app_users`, `stored_files`, `audit_entries` e `app_sessions` foram confirmadas. A persistência também foi verificada ao parar e reiniciar API e PostgreSQL sem remover volumes: a contagem de usuários permaneceu `1` e o health check voltou a `ok`. Nesta etapa de `test1.0`, o OpenVPN ativo na Frontend usa pool `10.8.0.0/24`; a configuração de acesso privado e o bloqueio pelo IP público estão sendo aplicados.
+
 ## Arquitetura registrada anteriormente
 
 O contexto técnico consolidado em 22/11/2026 descreve uma VPC, uma subnet e endereços privados para cada instância. Os detalhes de rede foram omitidos deste inventário publicado; confirme CIDRs, subnets e endereços privados no console/hosts antes de usá-los, pois não vieram no snapshot atual.

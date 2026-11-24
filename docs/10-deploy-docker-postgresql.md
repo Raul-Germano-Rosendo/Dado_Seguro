@@ -90,9 +90,17 @@ Remove-Item .\dado-sftp.pub
 
 Conecte no IP público da Backend 1, porta `22`, usuário `dado-sftp`, usando `ChaveEC2conf2Backend.pem` como chave privada. Essa chave também dá acesso administrativo ao usuário `ubuntu`; não a compartilhe com terceiros. A pasta inicial `/upload` é uma área isolada em `/srv/sftp/dado-sftp/upload`; os arquivos não aparecem automaticamente no painel da aplicação.
 
-Na instância frontend, execute `sudo bash /tmp/configure-https.sh IP_PRIVADO_BACKEND IP_PUBLICO_FRONTEND`. O script instala Certbot, emite certificado Let's Encrypt para o IP público e configura Nginx em HTTPS com redirecionamento HTTP. O Security Group da Frontend precisa permitir TCP `443`; mantenha `80` acessível para validação e renovação ACME. Certificados de IP são válidos por seis dias; o timer Certbot e o hook de recarga do Nginx devem continuar ativos. No ambiente atual, a regra 443 já estava permitida.
+Na instância frontend, execute `sudo bash /tmp/configure-https.sh IP_PRIVADO_BACKEND IP_PUBLICO_FRONTEND VPN_CIDR`. O script instala Certbot e mantém o certificado de IP; HTTP e HTTPS são liberados apenas a clientes VPN, enquanto o caminho ACME continua público. Certificados de IP são válidos por seis dias; mantenha o timer Certbot e o hook de recarga ativos.
 
-Depois de habilitar HTTPS, atualize a API com a sobreposição Compose, que define o cookie de sessão `Secure`:
+Para restringir o acesso ao OpenVPN ativo e disponibilizar a rota privada da Frontend, copie `deploy/enable-vpn-only.sh` para a instância e execute:
+
+```bash
+sudo bash /tmp/enable-vpn-only.sh IP_PRIVADO_FRONTEND IP_PRIVADO_BACKEND IP_PUBLICO_FRONTEND 10.8.0.0/24
+```
+
+O script faz backup das configurações, adiciona ao OpenVPN uma rota `/32` para a própria Frontend, limita Nginx aos clientes `10.8.0.0/24` e reinicia o serviço VPN. Os clientes precisam reconectar para receber a rota. Abra `http://IP_PRIVADO_FRONTEND` somente depois de conectar a VPN. O HTTP está dentro do túnel criptografado; por isso o Compose de `test1.0` deixa o cookie sem a flag `Secure`. Fora da VPN, acessar o IP público da Frontend deve retornar `403`.
+
+Depois de ativar o acesso via VPN, atualize a API com a sobreposição Compose para usar a sessão no HTTP interno do túnel:
 
 ```bash
 sudo docker compose -f /opt/dado-seguro/compose.yaml \
@@ -117,10 +125,10 @@ A senha aleatória do administrador inicial fica em `/opt/dado-seguro/.admin_pas
 
 ## Limites e próximos passos
 
-- HTTPS na instância frontend termina TLS; o salto interno até a API continua em HTTP dentro da VPC.
+- A aplicação em `test1.0` é acessível pela faixa VPN; o navegador usa HTTP somente dentro do túnel OpenVPN.
 - A API marca `encrypted=false`; o conteúdo dos arquivos não é criptografado pela aplicação.
 - Banco e arquivos têm somente persistência local. Automatize cópia externa e teste de restauração.
-- Esta implantação publica a aplicação em uma Backend 1; não há balanceamento ou failover da API.
+- Esta implantação publica a aplicação em uma Backend 1; Nginx com balanceamento e failover ainda será preparado.
 - O schema inicial é versionado em `backend/db/init/001_initial_schema.sql`; alterações futuras devem receber novos arquivos SQL versionados.
 - A instância `t3.micro` tem recursos limitados; monitore memória e disco.
 

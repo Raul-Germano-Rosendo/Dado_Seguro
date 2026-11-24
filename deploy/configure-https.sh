@@ -3,14 +3,19 @@
 set -euo pipefail
 
 if [[ "${EUID}" -ne 0 ]]; then
-  echo "Execute com sudo: sudo bash configure-https.sh IP_PRIVADO_BACKEND IP_PUBLICO_FRONTEND" >&2
+	echo "Execute com sudo: sudo bash configure-https.sh IP_PRIVADO_BACKEND IP_PUBLICO_FRONTEND [VPN_CIDR]" >&2
   exit 1
 fi
 
 BACKEND_PRIVATE_IP="${1:-}"
 FRONTEND_PUBLIC_IP="${2:-}"
+VPN_CIDR="${3:-10.8.0.0/24}"
 if [[ ! "${BACKEND_PRIVATE_IP}" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ || ! "${FRONTEND_PUBLIC_IP}" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]]; then
   echo "Informe o IPv4 privado do Backend e o IPv4 público do Frontend." >&2
+  exit 1
+fi
+if [[ ! "${VPN_CIDR}" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}/[0-9]{1,2}$ ]]; then
+  echo "Informe a faixa CIDR usada pelos clientes OpenVPN (ex.: 10.8.0.0/24)." >&2
   exit 1
 fi
 if [[ ! -s /var/www/dadoseguro/index.html ]]; then
@@ -51,16 +56,19 @@ server {
     server_name ${FRONTEND_PUBLIC_IP};
     root ${WEBROOT};
     index index.html;
+    allow ${VPN_CIDR};
+    deny all;
     client_max_body_size 26m;
 
     location ^~ /.well-known/acme-challenge/ {
+        allow all;
         root ${WEBROOT};
         default_type text/plain;
         try_files \$uri =404;
     }
 
     location / {
-        return 301 https://\$host\$request_uri;
+        try_files \$uri \$uri/ /index.html;
     }
 }
 NGINX_HTTP
@@ -87,15 +95,18 @@ server {
     server_name ${FRONTEND_PUBLIC_IP};
     root ${WEBROOT};
     client_max_body_size 26m;
+    allow ${VPN_CIDR};
+    deny all;
 
     location ^~ /.well-known/acme-challenge/ {
+        allow all;
         root ${WEBROOT};
         default_type text/plain;
         try_files \$uri =404;
     }
 
     location / {
-        return 301 https://\$host\$request_uri;
+        try_files \$uri \$uri/ /index.html;
     }
 }
 
@@ -105,6 +116,8 @@ server {
     server_name ${FRONTEND_PUBLIC_IP};
     root ${WEBROOT};
     index index.html;
+    allow ${VPN_CIDR};
+    deny all;
     client_max_body_size 26m;
 
     ssl_certificate ${CERT_DIR}/fullchain.pem;
@@ -132,5 +145,6 @@ NGINX_TLS
 nginx -t
 systemctl reload nginx
 systemctl is-active snap.certbot.renew.timer
-echo "HTTPS ativo em https://${FRONTEND_PUBLIC_IP}; Certbot ${CERTBOT_VERSION}."
+echo "HTTPS restrito à VPN (${VPN_CIDR}) em https://${FRONTEND_PUBLIC_IP}; Certbot ${CERTBOT_VERSION}."
+echo "Acesso ao site pela VPN: http://IP_PRIVADO_FRONTEND (tráfego protegido pelo túnel)."
 echo "Renovação automática configurada pelo timer snap.certbot.renew."
