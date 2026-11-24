@@ -34,4 +34,4 @@
 
 Estas etapas registram o que falta para sair da demonstração. O estado efetivamente implantado está em [Estado da implantação](09-estado-implantacao.md).
 
-> Atualização: frontend, API, PostgreSQL, SFTP e HTTPS foram integrados para demonstração em 23/11/2026. O schema inicial é aplicado a partir de SQL montado no PostgreSQL, e a persistência foi conferida após parar/reiniciar os containers. O acesso via VPN e o bloqueio público estão sendo ativados em 24/11/2026. Balanceamento/failover, backup externo e restauração testada continuam pendentes.
+> Atualização: frontend, API, PostgreSQL, SFTP e HTTPS foram integrados para demonstração em 23/11/2026. O schema inicial é aplicado a partir de SQL montado no PostgreSQL, e a persistência foi conferida após parar/reiniciar os containers. Em 24/11/2026, o bloqueio público 403 e o acesso pelo caminho VPN no próprio host foram confirmados; falta reconectar e testar o perfil OpenVPN no PC cliente. Balanceamento/failover, backup externo e restauração testada continuam pendentes.
