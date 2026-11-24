@@ -27,39 +27,6 @@ const pool = new Pool({
   connectionTimeoutMillis: 5000,
 })
 
-const schema = `
-CREATE TABLE IF NOT EXISTS app_users (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  username text NOT NULL UNIQUE,
-  password_hash text NOT NULL,
-  role text NOT NULL CHECK (role IN ('admin', 'user')),
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS stored_files (
-  id uuid PRIMARY KEY,
-  owner_id uuid NOT NULL REFERENCES app_users(id),
-  original_name text NOT NULL,
-  stored_name text NOT NULL UNIQUE,
-  size_bytes bigint NOT NULL CHECK (size_bytes >= 0),
-  access text NOT NULL CHECK (access IN ('privado', 'equipe')),
-  encrypted boolean NOT NULL DEFAULT false,
-  uploaded_at timestamptz NOT NULL DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS stored_files_uploaded_at_idx ON stored_files (uploaded_at DESC);
-
-CREATE TABLE IF NOT EXISTS audit_entries (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid REFERENCES app_users(id) ON DELETE SET NULL,
-  username text NOT NULL,
-  action text NOT NULL CHECK (action IN ('login', 'login_falhou', 'upload', 'download', 'exclusao', 'logout')),
-  target text,
-  ok boolean NOT NULL,
-  at timestamptz NOT NULL DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS audit_entries_at_idx ON audit_entries (at DESC);
-`
-
 type AppUser = NonNullable<Request['currentUser']>
 
 async function audit(user: AppUser | null, action: string, ok: boolean, target?: string) {
@@ -106,7 +73,7 @@ app.use(express.json({ limit: '32kb' }))
 app.use(session({
   name: 'dado.sid',
   secret: readSecret('SESSION_SECRET_FILE'),
-  store: new PgStore({ pool, tableName: 'app_sessions', createTableIfMissing: true, ttl: 8 * 60 * 60 }),
+  store: new PgStore({ pool, tableName: 'app_sessions', createTableIfMissing: false, ttl: 8 * 60 * 60 }),
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -277,7 +244,6 @@ app.use(errors)
 
 async function start() {
   await mkdir(uploadDir, { recursive: true, mode: 0o750 })
-  await pool.query(schema)
   const adminPassword = readSecret('ADMIN_PASSWORD_FILE')
   if (adminPassword.length < 16) throw new Error('A senha inicial do administrador deve ter ao menos 16 caracteres.')
   const adminUsername = process.env.ADMIN_USERNAME ?? 'admin'

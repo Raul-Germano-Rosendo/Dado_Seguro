@@ -15,6 +15,10 @@ if [[ ! -s "${BASE_COMPOSE}" || ! -s "${APP_COMPOSE}" || ! -s "${APP_DIR}/backen
   echo "Copie backend/ compilado e deploy/compose.application.yaml para ${APP_DIR} antes de continuar." >&2
   exit 1
 fi
+if [[ ! -s "${APP_DIR}/backend/db/init/001_initial_schema.sql" ]]; then
+  echo "O schema SQL precisa estar em ${APP_DIR}/backend/db/init/001_initial_schema.sql." >&2
+  exit 1
+fi
 
 install -d -m 0700 "${APP_DIR}"
 umask 077
@@ -28,6 +32,10 @@ chmod 0644 "${APP_DIR}/.db_password"
 
 cd "${APP_DIR}"
 docker compose -f "${BASE_COMPOSE}" -f "${APP_COMPOSE}" config --quiet
+docker compose -f "${BASE_COMPOSE}" -f "${APP_COMPOSE}" up -d --wait db
+docker compose -f "${BASE_COMPOSE}" -f "${APP_COMPOSE}" exec -T db \
+  psql -v ON_ERROR_STOP=1 -U dadoseguro_app -d dadoseguro \
+  -f /docker-entrypoint-initdb.d/001_initial_schema.sql
 docker compose -f "${BASE_COMPOSE}" -f "${APP_COMPOSE}" up -d --build --wait api
 curl -fsS http://127.0.0.1:3000/healthz
 echo

@@ -4,7 +4,7 @@
 
 A stack da demonstração usa uma instância backend Ubuntu com Docker Compose para API Node.js/TypeScript e PostgreSQL 16. O Nginx backend encaminha requisições para a API em `127.0.0.1:3000`; a porta PostgreSQL 5432 não é publicada no host. Na instância frontend, Nginx serve o build React/Vite e encaminha `/api/` para a backend. A interface e os dados são persistidos separadamente: metadados no PostgreSQL e conteúdo dos arquivos em volume Docker local.
 
-O procedimento base para preparar o host e o banco é [`deploy/setup-backend.sh`](../deploy/setup-backend.sh). [`deploy/compose.application.yaml`](../deploy/compose.application.yaml) adiciona a API à composição existente e [`deploy/enable-api.sh`](../deploy/enable-api.sh) constrói e inicia a aplicação. A API e suas rotas estão descritas em [`backend/README.md`](../backend/README.md).
+O procedimento base para preparar o host e o banco é [`deploy/setup-backend.sh`](../deploy/setup-backend.sh). [`deploy/compose.application.yaml`](../deploy/compose.application.yaml) mapeia o script SQL para dentro do container PostgreSQL e define a API; [`deploy/enable-api.sh`](../deploy/enable-api.sh) aplica o schema e inicia a aplicação. A definição das tabelas está em [`backend/db/init/001_initial_schema.sql`](../backend/db/init/001_initial_schema.sql), e as rotas estão descritas em [`backend/README.md`](../backend/README.md).
 
 ## Preparar a Backend 1
 
@@ -35,7 +35,19 @@ sudo docker compose \
   -f /opt/dado-seguro/deploy/compose.application.yaml ps
 ```
 
-O script `enable-api.sh` prepara a rede, sobe API e banco e espera a verificação de saúde. As senhas e o segredo de sessão são montados nos serviços que precisam deles, sem entrar no Git ou na imagem.
+O script `enable-api.sh` monta a pasta `backend/db/init` dentro do PostgreSQL como somente leitura, executa `001_initial_schema.sql` e então sobe a API. O SQL usa `IF NOT EXISTS`, portanto pode ser repetido sem apagar os dados já gravados. A primeira inicialização do PostgreSQL também lê scripts em `/docker-entrypoint-initdb.d`; como a demonstração pode já ter um volume criado, o deploy executa o SQL explicitamente em cada atualização. As senhas e o segredo de sessão são montados nos serviços que precisam deles, sem entrar no Git ou na imagem.
+
+Para mostrar as tabelas e os registros persistidos no banco:
+
+```bash
+sudo docker compose -f /opt/dado-seguro/compose.yaml \
+  -f /opt/dado-seguro/deploy/compose.application.yaml \
+  exec -T db psql -U dadoseguro_app -d dadoseguro -c '\dt'
+sudo docker compose -f /opt/dado-seguro/compose.yaml \
+  -f /opt/dado-seguro/deploy/compose.application.yaml \
+  exec -T db psql -U dadoseguro_app -d dadoseguro \
+  -c 'SELECT username, role, created_at FROM app_users ORDER BY created_at;'
+```
 
 ## Publicar o frontend e configurar os proxies
 
@@ -109,7 +121,7 @@ A senha aleatória do administrador inicial fica em `/opt/dado-seguro/.admin_pas
 - A API marca `encrypted=false`; o conteúdo dos arquivos não é criptografado pela aplicação.
 - Banco e arquivos têm somente persistência local. Automatize cópia externa e teste de restauração.
 - Esta implantação publica a aplicação em uma Backend 1; não há balanceamento ou failover da API.
-- O esquema inicial é criado pela API na inicialização; ainda não há migrações versionadas.
+- O schema inicial é versionado em `backend/db/init/001_initial_schema.sql`; alterações futuras devem receber novos arquivos SQL versionados.
 - A instância `t3.micro` tem recursos limitados; monitore memória e disco.
 
 ## Referências oficiais

@@ -1,4 +1,8 @@
 services:
+  db:
+    volumes:
+      - ./backend/db/init:/docker-entrypoint-initdb.d:ro
+
   api:
     build:
       context: ./backend
