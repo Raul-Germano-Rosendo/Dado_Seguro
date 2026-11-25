@@ -2,7 +2,7 @@
 
 Documentação de infraestrutura e planejamento técnico do projeto acadêmico **Dado Seguro**.
 
-> **Estado atual:** frontend React/Vite, API Node.js/TypeScript e PostgreSQL 16 estão integrados para demonstração. O site usa HTTPS com certificado curto para o IP público e redireciona HTTP; Certbot renova automaticamente. Há uma conta SFTP restrita no backend. A aplicação ainda usa um único backend e armazenamento local; não envie documentos reais. Consulte [Estado da implantação](docs/09-estado-implantacao.md), [deploy](docs/10-deploy-docker-postgresql.md) e [segurança](docs/06-seguranca.md).
+> **Estado atual (`test1.0`):** a aplicação é acessível pela rede OpenVPN em endereço privado; o IP público retorna 403 fora da VPN. O Compose base, API Node.js/TypeScript e PostgreSQL 16 estão versionados; o schema é SQL montado no container do banco. Docker/Compose e código de réplica já foram preparados em Backend 2 e Backup, mas as APIs ainda não foram iniciadas. Falta liberar PostgreSQL apenas pelos Security Groups privados e compartilhar os segredos necessários para concluir o failover. Não envie documentos reais. Consulte o [roteiro do professor](docs/provas-professor/README.md), [estado da implantação](docs/09-estado-implantacao.md) e [deploy](docs/10-deploy-docker-postgresql.md).
 
 ## Conteúdo
 
@@ -17,6 +17,7 @@ Documentação de infraestrutura e planejamento técnico do projeto acadêmico *
 - [Referências e decisões](docs/08-referencias.md)
 - [Estado da implantação e pendências](docs/09-estado-implantacao.md)
 - [Deploy com Docker, API e PostgreSQL](docs/10-deploy-docker-postgresql.md)
+- [Roteiro de provas do professor](docs/provas-professor/README.md)
 - [Configurações de exemplo](config/README.md)
 
 ## Árvore do repositório

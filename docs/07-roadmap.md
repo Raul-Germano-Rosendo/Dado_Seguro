@@ -10,12 +10,13 @@
 
 - Desenhar VPC, sub-redes, CIDRs e rotas.
 - Registrar a configuração OpenVPN efetivamente usada, endereçamento, certificados, rotas e método de administração sem publicar segredos.
+- Restringir a aplicação à VPN e comprovar bloqueio pelo IP público.
 - Revisar Security Groups e firewall do sistema.
 
 ## 3 — Aplicação (base implantada)
 
 - API, login, sessão, autorização básica, upload/download e auditoria implementados conforme `frontend/src/services/api.ts`.
-- API conectada ao PostgreSQL no Compose; tabelas iniciais são garantidas na inicialização.
+- API conectada ao PostgreSQL no Compose; schema inicial fica em script SQL mapeado para o container e aplicado pelo deploy.
 - Permitir gestão segura de contas e senhas.
 - Criar migrações versionadas e estratégia de backup externo, com teste de restauração.
 
@@ -33,4 +34,4 @@
 
 Estas etapas registram o que falta para sair da demonstração. O estado efetivamente implantado está em [Estado da implantação](09-estado-implantacao.md).
 
-> Atualização: frontend, API, PostgreSQL, SFTP e HTTPS foram integrados para demonstração em 23/11/2026. Migrações, backup externo e restauração testada continuam pendentes.
+> Atualização: frontend, API, PostgreSQL, SFTP e HTTPS foram integrados para demonstração em 23/11/2026. O schema inicial é aplicado a partir de SQL montado no PostgreSQL, e a persistência foi conferida após parar/reiniciar os containers. Em 24/11/2026, o bloqueio público 403 e o acesso pelo caminho VPN no próprio host foram confirmados; falta reconectar e testar o perfil OpenVPN no PC cliente. Balanceamento/failover, backup externo e restauração testada continuam pendentes.

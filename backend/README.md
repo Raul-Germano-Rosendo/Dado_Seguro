@@ -24,6 +24,8 @@ API Node.js/TypeScript que implementa o contrato usado por `frontend/src/service
 - Conteúdo é guardado com nome interno UUID; o nome original fica como metadado e é enviado ao cliente somente como download.
 - `encrypted` permanece `false`: esta versão não implementa criptografia de conteúdo. O volume está local na instância; não use documentos reais pela URL HTTP de demonstração.
 
+O esquema das tabelas está em [`db/init/001_initial_schema.sql`](db/init/001_initial_schema.sql). O Compose monta essa pasta, somente leitura, em `/docker-entrypoint-initdb.d` no PostgreSQL. O script de implantação aplica o SQL de forma idempotente antes de iniciar a API; assim, também funciona quando o volume do banco já existia. `CREATE TABLE IF NOT EXISTS` e `CREATE INDEX IF NOT EXISTS` preservam os registros ao repetir a etapa.
+
 ## Executar no ambiente do projeto
 
 Compile o TypeScript antes de construir a imagem, para manter o uso de memória da instância pequena:
@@ -42,4 +44,11 @@ sudo docker compose \
   up -d --build --wait
 ```
 
-O banco é alcançado pelo host interno `db:5432`. O processo API publica `3000` somente em loopback e usa secrets montados; o Nginx faz o encaminhamento para `/api`.
+O banco é alcançado pelo host interno `db:5432`. O processo API publica `3000` somente em loopback e usa secrets montados; o Nginx faz o encaminhamento para `/api`. Para conferir as tabelas no PostgreSQL:
+
+```bash
+sudo docker compose \
+  -f /opt/dado-seguro/compose.yaml \
+  -f /opt/dado-seguro/deploy/compose.application.yaml \
+  exec -T db psql -U dadoseguro_app -d dadoseguro -c '\dt'
+```

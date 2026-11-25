@@ -14,6 +14,8 @@ O snapshot mostra monitoramento detalhado desabilitado. IDs de instância, nomes
 
 Em verificação remota em 23/11/2026, a Backend 1 Ubuntu 26.04 executa Docker/Compose, PostgreSQL 16 e API Node.js/TypeScript. A API está saudável, conectada ao banco e publicada somente em loopback; PostgreSQL não publica porta no host. Na Frontend, Nginx serve React e HTTPS com certificado Let's Encrypt de IP; HTTP redireciona para HTTPS, e o timer Certbot está ativo. O health check público `https://IP_PUBLICO_FRONTEND/api/healthz` respondeu 200. A regra TCP 443 já existia no Security Group Frontend. Na Backend 1, o usuário SFTP `dado-sftp` está restrito a uma pasta chroot, sem shell e sem senha; o teste de envio/recebimento foi aprovado. O conteúdo SFTP fica separado dos arquivos cadastrados pelo painel. Veja [deploy](10-deploy-docker-postgresql.md).
 
+Em 24/11/2026, o schema `backend/db/init/001_initial_schema.sql` foi mapeado como somente leitura em `/docker-entrypoint-initdb.d` e executado sem apagar dados; as tabelas `app_users`, `stored_files`, `audit_entries` e `app_sessions` foram confirmadas. A persistência também foi verificada ao parar e reiniciar API e PostgreSQL sem remover volumes: a contagem de usuários permaneceu `1` e o health check voltou a `ok`. Na branch `test1.0`, OpenVPN envia a rota `/32` para a Frontend privada e Nginx permite somente `10.8.0.0/24`. Teste pelo túnel no próprio host respondeu `200` para a página e a API; do computador fora da VPN, HTTP, HTTPS e API no IP público responderam `403`. Este computador ainda não tinha rota VPN ativa, então o teste de cliente Windows após reconexão permanece pendente.
+
 ## Arquitetura registrada anteriormente
 
 O contexto técnico consolidado em 22/11/2026 descreve uma VPC, uma subnet e endereços privados para cada instância. Os detalhes de rede foram omitidos deste inventário publicado; confirme CIDRs, subnets e endereços privados no console/hosts antes de usá-los, pois não vieram no snapshot atual.
@@ -28,7 +30,7 @@ O mesmo contexto informa que o frontend já foi configurado com Nginx e OpenVPN;
 - Decisão e documentação do acesso VPN à VPC: rotas do cliente, encaminhamento IP, regras `FORWARD`, NAT ou rotas de retorno, Security Groups, NACLs e persistência após reinicialização.
 - Documentação das subnets e route tables atuais, endereços privados atuais, e regras de entrada/saída dos Security Groups.
 - Procedimento documentado de backup e restauração testada; a existência de uma EC2 chamada “Backup” não prova que os dados ou configurações tenham cópias restauráveis.
-- Migrações versionadas para evolução do esquema (a API atualmente cria o esquema inicial ao iniciar).
+- Migrações SQL adicionais para mudanças futuras do esquema; o schema inicial já está versionado em `backend/db/init/001_initial_schema.sql`.
 - Backup externo automatizado e teste de restauração; os volumes atuais são persistência local.
 - Certificados de IP têm validade de seis dias; manter o timer Certbot, o hook de reload e alertas de renovação monitorados.
 - Cadastro/gestão segura de usuários e troca de senha; atualmente existe apenas o administrador inicial.
@@ -37,7 +39,7 @@ O mesmo contexto informa que o frontend já foi configurado com Nginx e OpenVPN;
 
 ## Próxima coleta recomendada
 
-Para conferir a aplicação, use `curl http://127.0.0.1:3000/healthz` na Backend 1 e abra a URL HTTPS publicada no navegador; `/api/healthz` deve indicar API saudável. O fluxo usa uma backend e não expõe PostgreSQL. Para verificar a arquitetura de rede/VPN mais ampla, confirme IPs privados, serviços e regras no console AWS antes de alterar forwarding ou firewall.
+Para conferir a API, use `curl http://127.0.0.1:3000/healthz` na Backend 1. Pela VPN, abra `http://172.31.30.175`; `/api/healthz` deve indicar API saudável. Fora da VPN, o IP público deve retornar `403`. O fluxo ainda usa uma Backend 1 e não expõe PostgreSQL; balanceamento/failover permanecem pendentes. Para verificar a arquitetura VPN mais ampla, confirme endereços privados, serviços e regras no console AWS antes de alterar forwarding ou firewall.
 
 ## Cuidado com os registros
 

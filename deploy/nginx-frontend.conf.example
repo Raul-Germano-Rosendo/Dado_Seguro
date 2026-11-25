@@ -1,5 +1,5 @@
 # Substitua BACKEND_PRIVATE_IP pelo IP privado atual do Backend 1.
-# Este bloco substitui o proxy de demonstração anterior na instância Frontend.
+# O conteúdo da aplicação só pode ser acessado pela faixa dos clientes VPN.
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -7,8 +7,11 @@ server {
     root /var/www/dadoseguro;
     index index.html;
     client_max_body_size 26m;
+    allow 10.8.0.0/24;
+    deny all;
 
     location ^~ /.well-known/acme-challenge/ {
+        allow all;
         root /var/www/dadoseguro;
         default_type text/plain;
         try_files $uri =404;

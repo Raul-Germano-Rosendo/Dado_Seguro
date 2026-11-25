@@ -1,4 +1,8 @@
 services:
+  db:
+    volumes:
+      - ./backend/db/init:/docker-entrypoint-initdb.d:ro
+
   api:
     build:
       context: ./backend
@@ -25,7 +29,7 @@ services:
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD_FILE: /run/secrets/admin_password
       SESSION_SECRET_FILE: /run/secrets/session_secret
-      COOKIE_SECURE: "true"
+      COOKIE_SECURE: "false"
       UPLOAD_DIR: /app/uploads
     secrets:
       - db_password

@@ -4,7 +4,7 @@
 
 A stack da demonstração usa uma instância backend Ubuntu com Docker Compose para API Node.js/TypeScript e PostgreSQL 16. O Nginx backend encaminha requisições para a API em `127.0.0.1:3000`; a porta PostgreSQL 5432 não é publicada no host. Na instância frontend, Nginx serve o build React/Vite e encaminha `/api/` para a backend. A interface e os dados são persistidos separadamente: metadados no PostgreSQL e conteúdo dos arquivos em volume Docker local.
 
-O procedimento base para preparar o host e o banco é [`deploy/setup-backend.sh`](../deploy/setup-backend.sh). [`deploy/compose.application.yaml`](../deploy/compose.application.yaml) adiciona a API à composição existente e [`deploy/enable-api.sh`](../deploy/enable-api.sh) constrói e inicia a aplicação. A API e suas rotas estão descritas em [`backend/README.md`](../backend/README.md).
+O Compose base agora está versionado em [`compose.yaml`](../compose.yaml); [`deploy/setup-backend.sh`](../deploy/setup-backend.sh) instala Docker/Compose e prepara PostgreSQL. O instalador reutilizável [`deploy/install-docker-engine.sh`](../deploy/install-docker-engine.sh) pode preparar outros nós sem subir banco local. [`deploy/compose.application.yaml`](../deploy/compose.application.yaml) mapeia o script SQL para dentro do container PostgreSQL e define a API; [`deploy/enable-api.sh`](../deploy/enable-api.sh) aplica o schema e inicia a aplicação. A definição das tabelas está em [`backend/db/init/001_initial_schema.sql`](../backend/db/init/001_initial_schema.sql), e as rotas estão descritas em [`backend/README.md`](../backend/README.md).
 
 ## Preparar a Backend 1
 
@@ -17,16 +17,7 @@ ssh -i "C:\caminho\backend.pem" ubuntu@IP_PRIVADO "sudo bash /tmp/setup-backend.
 
 ## Publicar a API
 
-Na raiz do repositório, compile antes de copiar para manter baixo o uso de memória durante a construção da imagem na EC2:
-
-```powershell
-Push-Location .\backend
-npm ci
-npm run build
-Pop-Location
-```
-
-Copie `backend/` e `deploy/compose.application.yaml` para `/opt/dado-seguro/backend` e `/opt/dado-seguro/deploy/compose.application.yaml`. Então, na instância:
+Copie `backend/` e `deploy/compose.application.yaml` para `/opt/dado-seguro/backend` e `/opt/dado-seguro/deploy/compose.application.yaml`. O Dockerfile multistage compila TypeScript durante o build da imagem, então não precisa instalar Node.js no host.
 
 ```bash
 sudo bash /opt/dado-seguro/deploy/enable-api.sh
@@ -35,7 +26,19 @@ sudo docker compose \
   -f /opt/dado-seguro/deploy/compose.application.yaml ps
 ```
 
-O script `enable-api.sh` prepara a rede, sobe API e banco e espera a verificação de saúde. As senhas e o segredo de sessão são montados nos serviços que precisam deles, sem entrar no Git ou na imagem.
+O script `enable-api.sh` monta a pasta `backend/db/init` dentro do PostgreSQL como somente leitura, executa `001_initial_schema.sql` e então sobe a API. O SQL usa `IF NOT EXISTS`, portanto pode ser repetido sem apagar os dados já gravados. A primeira inicialização do PostgreSQL também lê scripts em `/docker-entrypoint-initdb.d`; como a demonstração pode já ter um volume criado, o deploy executa o SQL explicitamente em cada atualização. As senhas e o segredo de sessão são montados nos serviços que precisam deles, sem entrar no Git ou na imagem.
+
+Para mostrar as tabelas e os registros persistidos no banco:
+
+```bash
+sudo docker compose -f /opt/dado-seguro/compose.yaml \
+  -f /opt/dado-seguro/deploy/compose.application.yaml \
+  exec -T db psql -U dadoseguro_app -d dadoseguro -c '\dt'
+sudo docker compose -f /opt/dado-seguro/compose.yaml \
+  -f /opt/dado-seguro/deploy/compose.application.yaml \
+  exec -T db psql -U dadoseguro_app -d dadoseguro \
+  -c 'SELECT username, role, created_at FROM app_users ORDER BY created_at;'
+```
 
 ## Publicar o frontend e configurar os proxies
 
@@ -78,9 +81,17 @@ Remove-Item .\dado-sftp.pub
 
 Conecte no IP público da Backend 1, porta `22`, usuário `dado-sftp`, usando `ChaveEC2conf2Backend.pem` como chave privada. Essa chave também dá acesso administrativo ao usuário `ubuntu`; não a compartilhe com terceiros. A pasta inicial `/upload` é uma área isolada em `/srv/sftp/dado-sftp/upload`; os arquivos não aparecem automaticamente no painel da aplicação.
 
-Na instância frontend, execute `sudo bash /tmp/configure-https.sh IP_PRIVADO_BACKEND IP_PUBLICO_FRONTEND`. O script instala Certbot, emite certificado Let's Encrypt para o IP público e configura Nginx em HTTPS com redirecionamento HTTP. O Security Group da Frontend precisa permitir TCP `443`; mantenha `80` acessível para validação e renovação ACME. Certificados de IP são válidos por seis dias; o timer Certbot e o hook de recarga do Nginx devem continuar ativos. No ambiente atual, a regra 443 já estava permitida.
+Na instância frontend, execute `sudo bash /tmp/configure-https.sh IP_PRIVADO_BACKEND IP_PUBLICO_FRONTEND VPN_CIDR`. O script instala Certbot e mantém o certificado de IP; HTTP e HTTPS são liberados apenas a clientes VPN, enquanto o caminho ACME continua público. Certificados de IP são válidos por seis dias; mantenha o timer Certbot e o hook de recarga ativos.
 
-Depois de habilitar HTTPS, atualize a API com a sobreposição Compose, que define o cookie de sessão `Secure`:
+Para restringir o acesso ao OpenVPN ativo e disponibilizar a rota privada da Frontend, copie `deploy/enable-vpn-only.sh` para a instância e execute:
+
+```bash
+sudo bash /tmp/enable-vpn-only.sh IP_PRIVADO_FRONTEND IP_PRIVADO_BACKEND IP_PUBLICO_FRONTEND 10.8.0.0/24
+```
+
+O script faz backup das configurações, adiciona ao OpenVPN uma rota `/32` para a própria Frontend, limita Nginx aos clientes `10.8.0.0/24` e reinicia o serviço VPN. Os clientes precisam reconectar para receber a rota. Abra `http://IP_PRIVADO_FRONTEND` somente depois de conectar a VPN. O HTTP está dentro do túnel criptografado; por isso o Compose de `test1.0` deixa o cookie sem a flag `Secure`. Fora da VPN, acessar o IP público da Frontend deve retornar `403`.
+
+Depois de ativar o acesso via VPN, atualize a API com a sobreposição Compose para usar a sessão no HTTP interno do túnel:
 
 ```bash
 sudo docker compose -f /opt/dado-seguro/compose.yaml \
@@ -105,12 +116,12 @@ A senha aleatória do administrador inicial fica em `/opt/dado-seguro/.admin_pas
 
 ## Limites e próximos passos
 
-- HTTPS na instância frontend termina TLS; o salto interno até a API continua em HTTP dentro da VPC.
+- A aplicação em `test1.0` é acessível pela faixa VPN; o navegador usa HTTP somente dentro do túnel OpenVPN.
 - A API marca `encrypted=false`; o conteúdo dos arquivos não é criptografado pela aplicação.
 - Banco e arquivos têm somente persistência local. Automatize cópia externa e teste de restauração.
-- Esta implantação publica a aplicação em uma Backend 1; não há balanceamento ou failover da API.
-- O esquema inicial é criado pela API na inicialização; ainda não há migrações versionadas.
-- A instância `t3.micro` tem recursos limitados; monitore memória e disco.
+- O Nginx de balanceamento preparado em `deploy/enable-nginx-lb.sh` exige três health checks ativos. As replicas são preparadas com `deploy/compose.replica.yaml` e `deploy/setup-api-replica.sh`; veja os pré-requisitos de rede e os testes em [`docs/provas-professor/05-nginx-load-balancer-backup.md`](provas-professor/05-nginx-load-balancer-backup.md).
+- O schema inicial é versionado em `backend/db/init/001_initial_schema.sql`; alterações futuras devem receber novos arquivos SQL versionados.
+- A instância `t3.micro` tem recursos limitados; monitore memória e disco durante o build da imagem.
 
 ## Referências oficiais
 
