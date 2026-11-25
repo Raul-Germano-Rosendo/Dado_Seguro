@@ -4,7 +4,7 @@
 
 A stack da demonstração usa uma instância backend Ubuntu com Docker Compose para API Node.js/TypeScript e PostgreSQL 16. O Nginx backend encaminha requisições para a API em `127.0.0.1:3000`; a porta PostgreSQL 5432 não é publicada no host. Na instância frontend, Nginx serve o build React/Vite e encaminha `/api/` para a backend. A interface e os dados são persistidos separadamente: metadados no PostgreSQL e conteúdo dos arquivos em volume Docker local.
 
-O procedimento base para preparar o host e o banco é [`deploy/setup-backend.sh`](../deploy/setup-backend.sh). [`deploy/compose.application.yaml`](../deploy/compose.application.yaml) mapeia o script SQL para dentro do container PostgreSQL e define a API; [`deploy/enable-api.sh`](../deploy/enable-api.sh) aplica o schema e inicia a aplicação. A definição das tabelas está em [`backend/db/init/001_initial_schema.sql`](../backend/db/init/001_initial_schema.sql), e as rotas estão descritas em [`backend/README.md`](../backend/README.md).
+O Compose base agora está versionado em [`compose.yaml`](../compose.yaml); [`deploy/setup-backend.sh`](../deploy/setup-backend.sh) instala Docker/Compose e prepara PostgreSQL. [`deploy/compose.application.yaml`](../deploy/compose.application.yaml) mapeia o script SQL para dentro do container PostgreSQL e define a API; [`deploy/enable-api.sh`](../deploy/enable-api.sh) aplica o schema e inicia a aplicação. A definição das tabelas está em [`backend/db/init/001_initial_schema.sql`](../backend/db/init/001_initial_schema.sql), e as rotas estão descritas em [`backend/README.md`](../backend/README.md).
 
 ## Preparar a Backend 1
 
@@ -17,16 +17,7 @@ ssh -i "C:\caminho\backend.pem" ubuntu@IP_PRIVADO "sudo bash /tmp/setup-backend.
 
 ## Publicar a API
 
-Na raiz do repositório, compile antes de copiar para manter baixo o uso de memória durante a construção da imagem na EC2:
-
-```powershell
-Push-Location .\backend
-npm ci
-npm run build
-Pop-Location
-```
-
-Copie `backend/` e `deploy/compose.application.yaml` para `/opt/dado-seguro/backend` e `/opt/dado-seguro/deploy/compose.application.yaml`. Então, na instância:
+Copie `backend/` e `deploy/compose.application.yaml` para `/opt/dado-seguro/backend` e `/opt/dado-seguro/deploy/compose.application.yaml`. O Dockerfile multistage compila TypeScript durante o build da imagem, então não precisa instalar Node.js no host.
 
 ```bash
 sudo bash /opt/dado-seguro/deploy/enable-api.sh
@@ -128,9 +119,9 @@ A senha aleatória do administrador inicial fica em `/opt/dado-seguro/.admin_pas
 - A aplicação em `test1.0` é acessível pela faixa VPN; o navegador usa HTTP somente dentro do túnel OpenVPN.
 - A API marca `encrypted=false`; o conteúdo dos arquivos não é criptografado pela aplicação.
 - Banco e arquivos têm somente persistência local. Automatize cópia externa e teste de restauração.
-- Esta implantação publica a aplicação em uma Backend 1; Nginx com balanceamento e failover ainda será preparado.
+- O Nginx de balanceamento preparado em `deploy/enable-nginx-lb.sh` exige três health checks ativos. As replicas são preparadas com `deploy/compose.replica.yaml` e `deploy/setup-api-replica.sh`; veja os pré-requisitos de rede e os testes em [`docs/provas-professor/05-nginx-load-balancer-backup.md`](provas-professor/05-nginx-load-balancer-backup.md).
 - O schema inicial é versionado em `backend/db/init/001_initial_schema.sql`; alterações futuras devem receber novos arquivos SQL versionados.
-- A instância `t3.micro` tem recursos limitados; monitore memória e disco.
+- A instância `t3.micro` tem recursos limitados; monitore memória e disco durante o build da imagem.
 
 ## Referências oficiais
 

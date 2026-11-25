@@ -8,9 +8,9 @@ Este roteiro organiza as verificações práticas da branch `test1.0`. Faça as 
 |---|---|---|
 | Aplicação somente via VPN | Configurada | Fora da VPN, HTTP, HTTPS e API no IP público respondem `403`; pelo túnel no host Frontend, página e API respondem `200`. Falta reconectar o cliente Windows e confirmar o navegador do aluno. |
 | Persistência PostgreSQL | Configurada e exercitada | API e banco foram parados e iniciados sem remover volumes; a contagem de usuários permaneceu igual e a API voltou saudável. |
-| Dockerfile e Compose na AWS | Publicados | Dockerfile e os arquivos Compose estão em `/opt/dado-seguro` na Backend 1. |
+| Dockerfile e Compose | Stack ativa na Backend 1; Compose base agora versionado | A instância já tem Dockerfile/Compose ativos. `compose.yaml` entrou no Git nesta etapa; sincronize o arquivo antes de recriar o banco ou instalar replicas. |
 | Tabelas via script SQL montado | Configurado e exercitado | `001_initial_schema.sql` é montado como somente leitura no container PostgreSQL; as quatro tabelas foram listadas. |
-| Nginx com dois backends e servidor backup | **Pendente** | O Nginx atual encaminha para uma única Backend 1. Não pare a API esperando failover até concluir essa etapa. |
+| Nginx com dois backends e servidor backup | **Preparação versionada; implantação pendente** | Backend 2 (`172.31.29.33`) e Backup (`172.31.27.244`) respondem com o Nginx padrão e não têm Docker/API. PostgreSQL não está publicado na rede privada. Não execute o teste de parada antes de preparar os dois nós e aplicar os Security Groups restritos. |
 
 ## Sequência recomendada
 
@@ -19,8 +19,8 @@ Este roteiro organiza as verificações práticas da branch `test1.0`. Faça as 
 3. Com VPN conectada, abra `http://172.31.30.175` e confirme `/api/healthz`.
 4. Entre com a conta autorizada, envie um arquivo fictício e verifique a linha em PostgreSQL.
 5. Mostre o Dockerfile, o Compose e o volume persistente.
-6. Pare e inicie os containers **sem remover os volumes**; confirme que o arquivo continua na lista e pode ser baixado.
-7. Demonstre Nginx/load balancing/failover somente quando Backend 2 e Backup estiverem configurados e a seção [Nginx e failover](05-nginx-load-balancer-backup.md) deixar de estar pendente.
+6. Pare e inicie os containers **sem remover os volumes**; confirme que os dados continuam presentes.
+7. Demonstre Nginx/load balancing/failover somente depois de concluir os pré-requisitos da seção [Nginx e failover](05-nginx-load-balancer-backup.md).
 
 ## Acesso e cautelas
 

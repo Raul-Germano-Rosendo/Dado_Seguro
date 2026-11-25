@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Instala Docker Compose e inicia PostgreSQL para o laboratório Dado Seguro.
-# Ubuntu 22.04, 24.04 ou 26.04. Não publica a porta do banco no host.
+# PostgreSQL fica em loopback por padrão; replicas exigem configuração privada.
 set -euo pipefail
 
 if [[ "${EUID}" -ne 0 ]]; then
@@ -91,6 +91,8 @@ services:
       POSTGRES_DB: dadoseguro
       POSTGRES_USER: dadoseguro_app
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    ports:
+      - "${DADOSEGURO_DB_BIND_IP:-127.0.0.1}:5432:5432"
     secrets:
       - db_password
     volumes:
@@ -121,4 +123,5 @@ docker compose exec -T db pg_isready -U dadoseguro_app -d dadoseguro
 docker compose ps
 
 echo "PostgreSQL está ativo em um volume persistente do Docker."
-echo "A porta 5432 não foi publicada no host; serviços no mesmo Compose usam db:5432."
+echo "PostgreSQL está publicado somente em ${DADOSEGURO_DB_BIND_IP:-127.0.0.1}:5432."
+echo "Mantenha 127.0.0.1, exceto ao configurar replicas com Security Groups restritos."

@@ -11,8 +11,8 @@ fi
 APP_DIR="/opt/dado-seguro"
 BASE_COMPOSE="${APP_DIR}/compose.yaml"
 APP_COMPOSE="${APP_DIR}/deploy/compose.application.yaml"
-if [[ ! -s "${BASE_COMPOSE}" || ! -s "${APP_COMPOSE}" || ! -s "${APP_DIR}/backend/dist/server.js" ]]; then
-  echo "Copie backend/ compilado e deploy/compose.application.yaml para ${APP_DIR} antes de continuar." >&2
+if [[ ! -s "${BASE_COMPOSE}" || ! -s "${APP_COMPOSE}" || ! -s "${APP_DIR}/backend/src/server.ts" ]]; then
+  echo "Copie o código backend/ e deploy/compose.application.yaml para ${APP_DIR} antes de continuar." >&2
   exit 1
 fi
 if [[ ! -s "${APP_DIR}/backend/db/init/001_initial_schema.sql" ]]; then

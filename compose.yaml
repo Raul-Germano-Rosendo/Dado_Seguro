@@ -1,0 +1,35 @@
+# DADOSEGURO_MANAGED_POSTGRES
+# Compose base criado na instância Backend 1 e agora versionado para que
+# a demonstração possa ser reproduzida a partir do repositório.
+services:
+  db:
+    image: postgres:16
+    container_name: dado-seguro-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dadoseguro
+      POSTGRES_USER: dadoseguro_app
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    # Loopback por padrão. Para replicas, configure no .env o IP privado
+    # desta EC2 e autorize 5432 somente nos Security Groups das replicas.
+    ports:
+      - "${DADOSEGURO_DB_BIND_IP:-127.0.0.1}:5432:5432"
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    shm_size: 128mb
+    mem_limit: 384m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+secrets:
+  db_password:
+    file: ./.db_password
+
+volumes:
+  postgres_data:

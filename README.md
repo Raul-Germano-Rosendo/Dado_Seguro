@@ -2,7 +2,7 @@
 
 Documentação de infraestrutura e planejamento técnico do projeto acadêmico **Dado Seguro**.
 
-> **Estado atual (`test1.0`):** a aplicação é acessível pela rede OpenVPN em endereço privado; o IP público retorna 403 fora da VPN. O frontend React/Vite, API Node.js/TypeScript e PostgreSQL 16 usam Docker Compose. O schema está versionado em SQL e mapeado ao container do banco. A instância ainda usa uma única API e armazenamento local; balanceamento e failover são a próxima etapa. Não envie documentos reais. Consulte [Estado da implantação](docs/09-estado-implantacao.md), [deploy](docs/10-deploy-docker-postgresql.md) e [segurança](docs/06-seguranca.md).
+> **Estado atual (`test1.0`):** a aplicação é acessível pela rede OpenVPN em endereço privado; o IP público retorna 403 fora da VPN. O Compose base, API Node.js/TypeScript e PostgreSQL 16 estão versionados; o schema é SQL montado no container do banco. A implantação ativa ainda usa uma API. Os arquivos para preparar replicas e ativar Nginx com failover estão no repositório, mas dependem de instalar Docker nos nós secundários e liberar PostgreSQL somente pelos Security Groups privados. Não envie documentos reais. Consulte o [roteiro do professor](docs/provas-professor/README.md), [estado da implantação](docs/09-estado-implantacao.md) e [deploy](docs/10-deploy-docker-postgresql.md).
 
 ## Conteúdo
 
