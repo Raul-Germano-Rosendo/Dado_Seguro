@@ -2,7 +2,7 @@
 
 ## Estado atual: preparação versionada, ativação pendente
 
-O Nginx da Frontend está restrito à VPN e encaminha `/api` para a Backend 1 (`172.31.30.150`). Em 25/11/2026, a Backend 2 (`172.31.29.33`) e Backup (`172.31.27.244`) foram inspecionadas por SSH: ambas têm Nginx ativo na configuração padrão, sem Docker e sem a aplicação. A API responde saudável na Backend 1. A porta PostgreSQL ainda não está publicada no host.
+O Nginx da Frontend está restrito à VPN e encaminha `/api` para a Backend 1 (`172.31.30.150`). Em 25/11/2026, Docker Engine/Compose foram instalados e validados em Backend 2 (`172.31.29.33`) e Backup (`172.31.27.244`); o código da API e arquivos de deploy foram copiados para `/opt/dado-seguro`. O Nginx desses nós ainda serve a página padrão e nenhuma API replica foi iniciada. A API responde saudável na Backend 1. A porta PostgreSQL ainda não está publicada no host.
 
 Foram adicionados `deploy/compose.replica.yaml`, `deploy/setup-api-replica.sh` e `deploy/enable-nginx-lb.sh`. O script do balanceador recusa a troca enquanto os três endpoints de saúde não responderem `200`; assim, não aponta o site para páginas padrão ou serviços desligados. O repositório agora também contém o Compose base `compose.yaml`.
 

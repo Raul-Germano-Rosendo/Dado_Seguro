@@ -10,7 +10,7 @@ Este roteiro organiza as verificações práticas da branch `test1.0`. Faça as 
 | Persistência PostgreSQL | Configurada e exercitada | API e banco foram parados e iniciados sem remover volumes; a contagem de usuários permaneceu igual e a API voltou saudável. |
 | Dockerfile e Compose | Stack ativa na Backend 1; Compose base agora versionado | A instância já tem Dockerfile/Compose ativos. `compose.yaml` entrou no Git nesta etapa; sincronize o arquivo antes de recriar o banco ou instalar replicas. |
 | Tabelas via script SQL montado | Configurado e exercitado | `001_initial_schema.sql` é montado como somente leitura no container PostgreSQL; as quatro tabelas foram listadas. |
-| Nginx com dois backends e servidor backup | **Preparação versionada; implantação pendente** | Backend 2 (`172.31.29.33`) e Backup (`172.31.27.244`) respondem com o Nginx padrão e não têm Docker/API. PostgreSQL não está publicado na rede privada. Não execute o teste de parada antes de preparar os dois nós e aplicar os Security Groups restritos. |
+| Nginx com dois backends e servidor backup | **Preparação implantada; ativação pendente** | Backend 2 (`172.31.29.33`) e Backup (`172.31.27.244`) têm Docker/Compose ativos e arquivos da réplica em `/opt/dado-seguro`; Nginx ainda é padrão e não há API rodando. PostgreSQL não está publicado na rede privada. Não execute o teste de parada antes de ativar as réplicas e aplicar os Security Groups restritos. |
 
 ## Sequência recomendada
 
