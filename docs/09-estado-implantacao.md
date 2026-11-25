@@ -30,7 +30,7 @@ O mesmo contexto informa que o frontend já foi configurado com Nginx e OpenVPN;
 - Decisão e documentação do acesso VPN à VPC: rotas do cliente, encaminhamento IP, regras `FORWARD`, NAT ou rotas de retorno, Security Groups, NACLs e persistência após reinicialização.
 - Documentação das subnets e route tables atuais, endereços privados atuais, e regras de entrada/saída dos Security Groups.
 - Procedimento documentado de backup e restauração testada; a existência de uma EC2 chamada “Backup” não prova que os dados ou configurações tenham cópias restauráveis.
-- Migrações versionadas para evolução do esquema (a API atualmente cria o esquema inicial ao iniciar).
+- Migrações SQL adicionais para mudanças futuras do esquema; o schema inicial já está versionado em `backend/db/init/001_initial_schema.sql`.
 - Backup externo automatizado e teste de restauração; os volumes atuais são persistência local.
 - Certificados de IP têm validade de seis dias; manter o timer Certbot, o hook de reload e alertas de renovação monitorados.
 - Cadastro/gestão segura de usuários e troca de senha; atualmente existe apenas o administrador inicial.
@@ -39,7 +39,7 @@ O mesmo contexto informa que o frontend já foi configurado com Nginx e OpenVPN;
 
 ## Próxima coleta recomendada
 
-Para conferir a aplicação, use `curl http://127.0.0.1:3000/healthz` na Backend 1 e abra a URL HTTPS publicada no navegador; `/api/healthz` deve indicar API saudável. O fluxo usa uma backend e não expõe PostgreSQL. Para verificar a arquitetura de rede/VPN mais ampla, confirme IPs privados, serviços e regras no console AWS antes de alterar forwarding ou firewall.
+Para conferir a API, use `curl http://127.0.0.1:3000/healthz` na Backend 1. Pela VPN, abra `http://172.31.30.175`; `/api/healthz` deve indicar API saudável. Fora da VPN, o IP público deve retornar `403`. O fluxo ainda usa uma Backend 1 e não expõe PostgreSQL; balanceamento/failover permanecem pendentes. Para verificar a arquitetura VPN mais ampla, confirme endereços privados, serviços e regras no console AWS antes de alterar forwarding ou firewall.
 
 ## Cuidado com os registros
 

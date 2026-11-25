@@ -17,6 +17,7 @@ Documentação de infraestrutura e planejamento técnico do projeto acadêmico *
 - [Referências e decisões](docs/08-referencias.md)
 - [Estado da implantação e pendências](docs/09-estado-implantacao.md)
 - [Deploy com Docker, API e PostgreSQL](docs/10-deploy-docker-postgresql.md)
+- [Roteiro de provas do professor](docs/provas-professor/README.md)
 - [Configurações de exemplo](config/README.md)
 
 ## Árvore do repositório
