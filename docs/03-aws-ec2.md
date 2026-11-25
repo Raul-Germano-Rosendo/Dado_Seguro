@@ -2,7 +2,7 @@
 
 ## Ambiente registrado
 
-O snapshot de 22/11/2026 registra quatro instâncias EC2 `t3.micro` em execução em `us-east-1c`. Nomes, IDs e endereços públicos fornecidos estão em [Estado da implantação](09-estado-implantacao.md). Confirme estado, endereços privados, subnets, volumes, tags e regras atuais no console AWS antes de operar. A tabela não substitui inventário ao vivo.
+O inventário mais recente confirmou quatro instâncias de laboratório. Região, zona, nomes, IDs e endereços não são publicados nesta documentação. Confirme estado, endereços atuais, subnets, volumes, tags e regras no console AWS antes de operar; a arquitetura muda com o laboratório.
 
 ## Próximos passos de infraestrutura
 

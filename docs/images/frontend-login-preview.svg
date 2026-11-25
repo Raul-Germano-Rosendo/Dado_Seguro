@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="753" height="710" viewBox="0 0 753 710" role="img" aria-labelledby="title desc">
+  <title id="title">Prévia da tela de login do Dado Seguro</title>
+  <desc id="desc">Ilustração esquemática da interface atual, sem dados de usuário ou senha.</desc>
+  <defs>
+    <linearGradient id="hero" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#d5e8ff"/><stop offset="1" stop-color="#f4f9ff"/></linearGradient>
+  </defs>
+  <rect width="753" height="710" fill="#fff"/>
+  <path d="M0 0h753v365H0z" fill="url(#hero)"/>
+  <rect x="32" y="31" width="55" height="56" rx="13" fill="#398fdf"/>
+  <path d="M59 43l14 5v10c0 10-7 18-14 21-8-4-14-11-14-21V48z" fill="#fff"/>
+  <rect x="56" y="55" width="7" height="8" rx="2" fill="#398fdf"/>
+  <path d="M57 55v-3a2.5 2.5 0 015 0v3" fill="none" stroke="#398fdf" stroke-width="2"/>
+  <text x="32" y="141" fill="#142e55" font-family="Arial,sans-serif" font-size="39" font-weight="700">Dado Seguro</text>
+  <text x="32" y="185" fill="#60728a" font-family="Arial,sans-serif" font-size="17">Envie, guarde e compartilhe arquivos com</text>
+  <text x="32" y="210" fill="#60728a" font-family="Arial,sans-serif" font-size="17">controle de acesso e registro de cada ação.</text>
+  <g fill="#172c48" font-family="Arial,sans-serif" font-size="15">
+    <circle cx="36" cy="258" r="3"/><text x="49" y="263">Acesso controlado por usuário</text>
+    <circle cx="36" cy="290" r="3"/><text x="49" y="295">Permissões por pessoa e equipe</text>
+    <circle cx="36" cy="322" r="3"/><text x="49" y="327">Auditoria de uploads e downloads</text>
+  </g>
+  <g font-family="Arial,sans-serif">
+    <text x="183" y="410" fill="#183457" font-size="16" font-weight="700">Entrar</text>
+    <text x="183" y="435" fill="#66778c" font-size="15">Use sua conta autorizada para acessar os arquivos.</text>
+    <text x="183" y="479" fill="#52657c" font-size="14" font-weight="700">Usuário</text>
+    <rect x="183" y="491" width="373" height="42" rx="10" fill="#fff" stroke="#dce4ee"/>
+    <text x="183" y="559" fill="#52657c" font-size="14" font-weight="700">Senha</text>
+    <rect x="183" y="571" width="373" height="42" rx="10" fill="#fff" stroke="#dce4ee"/>
+    <rect x="183" y="643" width="373" height="46" rx="10" fill="#398fdf"/>
+    <text x="369.5" y="671" fill="#fff" font-size="15" font-weight="700" text-anchor="middle">Entrar</text>
+  </g>
+</svg>

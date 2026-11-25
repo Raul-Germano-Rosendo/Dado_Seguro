@@ -1,46 +1,31 @@
-# 9. Estado da implantação e pendências
+# 9. Estado da implantação
 
-## Evidência disponível
+Última conferência: **25/11/2026**. Esta página registra estados verificados sem publicar IPs, IDs de instância, nomes de chaves ou credenciais.
 
-O snapshot abaixo foi fornecido pelo responsável pelo projeto em **22/11/2026 às 21:51 (GMT-3)**. Ele mostra instâncias EC2 no estado `Executando`; não confirma a saúde dos serviços, as regras de rede, nem a disponibilidade HTTP/VPN.
+## Serviços
 
-| Papel | Quantidade | Estado | Tipo | AZ | Sistema |
-|---|---:|---|---|---|---|
-| Frontend | 1 | Executando | `t3.micro` | `us-east-1c` | Linux/UNIX |
-| Backend | 2 | Executando | `t3.micro` | `us-east-1c` | Linux/UNIX |
-| Backup | 1 | Executando | `t3.micro` | `us-east-1c` | Linux/UNIX |
+| Componente | Estado confirmado |
+|---|---|
+| Frontend | Nginx serve a aplicação; OpenVPN ativo. Fora da VPN, o acesso web público responde `403`. Pela VPN, site e API respondem `200` no endereço privado. |
+| Backend 1 | Docker Compose, API e PostgreSQL 16 ativos e saudáveis. PostgreSQL usa volume persistente e não publica `5432` para as outras instâncias. |
+| Backend 2 | Docker Engine/Compose instalados; código da réplica copiado. Nginx ainda está no padrão e a API não foi iniciada. |
+| Backup | Docker Engine/Compose instalados; código da réplica copiado. Nginx ainda está no padrão e a API não foi iniciada. |
+| Acesso VPN no cliente | Cliente conecta, recebe endereço VPN e rota `/32` para o Frontend privado. A página e `/api/healthz` foram validadas pelo cliente. |
+| HTTPS | Certificado de IP e listener TLS configurados no Frontend. A política bloqueia o acesso à aplicação pelo endereço público; o caminho de demonstração é HTTP para o IP privado dentro do túnel OpenVPN. Para TLS no endereço privado, é necessário domínio e resolução privada apropriados. |
+| Git | A branch `1.1` parte da `main` do repositório renomeado `Dado_Seguro`. |
 
-O snapshot mostra monitoramento detalhado desabilitado. IDs de instância, nomes de recursos, grupos de segurança, IPs e DNS foram omitidos deste inventário publicado. Consulte o console AWS autorizado para esses dados.
+## Arquitetura atual
 
-Em verificação remota em 23/11/2026, a Backend 1 Ubuntu 26.04 executa Docker/Compose, PostgreSQL 16 e API Node.js/TypeScript. A API está saudável, conectada ao banco e publicada somente em loopback; PostgreSQL não publica porta no host. Na Frontend, Nginx serve React e HTTPS com certificado Let's Encrypt de IP; HTTP redireciona para HTTPS, e o timer Certbot está ativo. O health check público `https://IP_PUBLICO_FRONTEND/api/healthz` respondeu 200. A regra TCP 443 já existia no Security Group Frontend. Na Backend 1, o usuário SFTP `dado-sftp` está restrito a uma pasta chroot, sem shell e sem senha; o teste de envio/recebimento foi aprovado. O conteúdo SFTP fica separado dos arquivos cadastrados pelo painel. Veja [deploy](10-deploy-docker-postgresql.md).
+![Diagrama da arquitetura atualmente implantada](images/arquitetura-atual.svg)
 
-Em 24/11/2026, o schema `backend/db/init/001_initial_schema.sql` foi mapeado como somente leitura em `/docker-entrypoint-initdb.d` e executado sem apagar dados; as tabelas `app_users`, `stored_files`, `audit_entries` e `app_sessions` foram confirmadas. A persistência também foi verificada ao parar e reiniciar API e PostgreSQL sem remover volumes: a contagem de usuários permaneceu `1` e o health check voltou a `ok`. Na branch `test1.0`, OpenVPN envia a rota `/32` para a Frontend privada e Nginx permite somente `10.8.0.0/24`. Teste pelo túnel no próprio host respondeu `200` para a página e a API; do computador fora da VPN, HTTP, HTTPS e API no IP público responderam `403`. Este computador ainda não tinha rota VPN ativa, então o teste de cliente Windows após reconexão permanece pendente.
+O frontend serve a interface e encaminha `/api` para uma única Backend 1. API e banco compartilham a rede Docker nessa instância. Os nós secundários estão preparados com Docker e arquivos, mas ainda não atendem tráfego.
 
-## Arquitetura registrada anteriormente
+## Pendências para balanceamento e failover
 
-O contexto técnico consolidado em 22/11/2026 descreve uma VPC, uma subnet e endereços privados para cada instância. Os detalhes de rede foram omitidos deste inventário publicado; confirme CIDRs, subnets e endereços privados no console/hosts antes de usá-los, pois não vieram no snapshot atual.
+- Publicar PostgreSQL somente no IP privado da Backend 1 e restringir `TCP/5432` aos Security Groups da Backend 2 e Backup.
+- Transferir os segredos de banco e sessão das réplicas por SSH, sem colocá-los no Git.
+- Iniciar e validar as APIs secundárias; só então ativar o upstream Nginx com o backup em espera.
+- Os arquivos enviados ficam em volumes locais. Download após failover exige armazenamento compartilhado ou replicação.
+- Criar cópia de segurança externa e demonstrar uma restauração.
 
-O mesmo contexto informa que o frontend já foi configurado com Nginx e OpenVPN; o Nginx distribuía tráfego HTTP entre os dois backends e reservava o backup como `backup`. Foram relatados testes anteriores de distribuição e failover bem-sucedidos. OpenVPN principal foi descrito com uma rede VPN `10.8.0.0/24` e um cliente de teste. Esses são registros históricos, não validação do estado atual. Um teste anterior parou o Nginx dos backends primários, sem confirmação de que ambos foram iniciados novamente.
-
-## O que ainda falta no repositório
-
-- Evidências recentes e reproduzíveis do estado dos serviços e da conectividade entre as quatro instâncias.
-- Confirmação do estado do Nginx nos backends primários e do upstream atual no frontend.
-- Confirmação do OpenVPN principal, do túnel de teste e da ausência de conflito com a configuração antiga.
-- Decisão e documentação do acesso VPN à VPC: rotas do cliente, encaminhamento IP, regras `FORWARD`, NAT ou rotas de retorno, Security Groups, NACLs e persistência após reinicialização.
-- Documentação das subnets e route tables atuais, endereços privados atuais, e regras de entrada/saída dos Security Groups.
-- Procedimento documentado de backup e restauração testada; a existência de uma EC2 chamada “Backup” não prova que os dados ou configurações tenham cópias restauráveis.
-- Migrações SQL adicionais para mudanças futuras do esquema; o schema inicial já está versionado em `backend/db/init/001_initial_schema.sql`.
-- Backup externo automatizado e teste de restauração; os volumes atuais são persistência local.
-- Certificados de IP têm validade de seis dias; manter o timer Certbot, o hook de reload e alertas de renovação monitorados.
-- Cadastro/gestão segura de usuários e troca de senha; atualmente existe apenas o administrador inicial.
-- Alta disponibilidade e balanceamento: implantação atual da aplicação encaminha para uma única Backend 1.
-- Automatização segura e reproduzível da infraestrutura e da implantação, além de monitoramento, alertas, atualização e plano de rollback.
-
-## Próxima coleta recomendada
-
-Para conferir a API, use `curl http://127.0.0.1:3000/healthz` na Backend 1. Pela VPN, abra `http://172.31.30.175`; `/api/healthz` deve indicar API saudável. Fora da VPN, o IP público deve retornar `403`. O fluxo ainda usa uma Backend 1 e não expõe PostgreSQL; balanceamento/failover permanecem pendentes. Para verificar a arquitetura VPN mais ampla, confirme endereços privados, serviços e regras no console AWS antes de alterar forwarding ou firewall.
-
-## Cuidado com os registros
-
-Este documento diferencia o snapshot recebido de relatos anteriores. Atualize a tabela somente a partir de nova evidência datada. Não inclua chaves privadas, arquivos `.pem`/`.key`, perfis de cliente preenchidos, tokens ou credenciais. Consulte [Rede e VPN](04-rede-vpn.md), [Nginx](05-nginx.md) e [Segurança](06-seguranca.md) para os modelos e princípios, que não substituem a validação da infraestrutura ativa.
+Use os placeholders `IP_PUBLICO_*` e `IP_PRIVADO_*` dos roteiros somente após consultar os endereços atuais no console AWS. Nunca inclua valores reais, chaves, senhas ou perfis VPN completos nesta documentação pública.

@@ -1,8 +1,14 @@
 # Dado Seguro
 
-Documentação de infraestrutura e planejamento técnico do projeto acadêmico **Dado Seguro**.
+Documentação de infraestrutura, aplicação e testes do projeto acadêmico **Dado Seguro**. Repositório: [Raul-Germano-Rosendo/Dado_Seguro](https://github.com/Raul-Germano-Rosendo/Dado_Seguro). A branch de trabalho desta entrega é `1.1`.
 
-> **Estado atual (`test1.0`):** a aplicação é acessível pela rede OpenVPN em endereço privado; o IP público retorna 403 fora da VPN. O Compose base, API Node.js/TypeScript e PostgreSQL 16 estão versionados; o schema é SQL montado no container do banco. Docker/Compose e código de réplica já foram preparados em Backend 2 e Backup, mas as APIs ainda não foram iniciadas. Falta liberar PostgreSQL apenas pelos Security Groups privados e compartilhar os segredos necessários para concluir o failover. Não envie documentos reais. Consulte o [roteiro do professor](docs/provas-professor/README.md), [estado da implantação](docs/09-estado-implantacao.md) e [deploy](docs/10-deploy-docker-postgresql.md).
+> **Estado atual (`1.1`):** o frontend é acessível pelo IP privado através da OpenVPN; o endereço público retorna `403`. A API e PostgreSQL 16 estão saudáveis na Backend 1, com schema versionado em SQL. Docker e código estão preparados nos nós secundários; balanceamento e failover aguardam a liberação privada do PostgreSQL e a configuração das réplicas. Use somente dados fictícios. Consulte o [roteiro do professor](docs/provas-professor/README.md), [estado da implantação](docs/09-estado-implantacao.md) e [deploy](docs/10-deploy-docker-postgresql.md).
+
+## Imagens do projeto
+
+![Prévia ilustrativa da tela de login, sem credenciais](docs/images/frontend-login-preview.svg)
+
+O diagrama da [arquitetura atual](docs/images/arquitetura-atual.svg) distingue o que está ativo das réplicas ainda pendentes. A [arquitetura alvo](docs/images/arquitetura-alvo.svg) ilustra o balanceamento planejado.
 
 ## Conteúdo
 
@@ -23,7 +29,7 @@ Documentação de infraestrutura e planejamento técnico do projeto acadêmico *
 ## Árvore do repositório
 
 ```text
-Redes_Jean/
+Dado_Seguro/
 ├── README.md
 ├── .gitignore
 ├── frontend/ (interface React/Vite)

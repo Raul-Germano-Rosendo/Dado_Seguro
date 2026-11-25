@@ -22,20 +22,20 @@ API Node.js/TypeScript que implementa o contrato usado por `frontend/src/service
 - Senhas são armazenadas como hash bcrypt. A sessão fica no PostgreSQL e o cookie é `HttpOnly`, `SameSite=Lax` e expira após oito horas.
 - Administradores veem todos os arquivos. Usuários comuns veriam os próprios arquivos e os marcados como `equipe`; não há rota para criar contas nesta primeira versão.
 - Conteúdo é guardado com nome interno UUID; o nome original fica como metadado e é enviado ao cliente somente como download.
-- `encrypted` permanece `false`: esta versão não implementa criptografia de conteúdo. O volume está local na instância; não use documentos reais pela URL HTTP de demonstração.
+- `encrypted` permanece `false`: esta versão não implementa criptografia de conteúdo. O volume está local na instância; use apenas arquivos fictícios.
 
 O esquema das tabelas está em [`db/init/001_initial_schema.sql`](db/init/001_initial_schema.sql). O Compose monta essa pasta, somente leitura, em `/docker-entrypoint-initdb.d` no PostgreSQL. O script de implantação aplica o SQL de forma idempotente antes de iniciar a API; assim, também funciona quando o volume do banco já existia. `CREATE TABLE IF NOT EXISTS` e `CREATE INDEX IF NOT EXISTS` preservam os registros ao repetir a etapa.
 
 ## Executar no ambiente do projeto
 
-Compile o TypeScript antes de construir a imagem, para manter o uso de memória da instância pequena:
+O Dockerfile multistage instala as dependências de compilação, compila o TypeScript e produz uma imagem de runtime sem as dependências de desenvolvimento:
 
 ```bash
 npm ci
 npm run build
 ```
 
-Depois copie `backend/` (incluindo `dist/`) para `/opt/dado-seguro/backend` e use os dois arquivos Compose, com o Compose base apontando para o serviço `db`:
+Copie `backend/` para `/opt/dado-seguro/backend` e use os dois arquivos Compose, com o Compose base apontando para o serviço `db`:
 
 ```bash
 sudo docker compose \

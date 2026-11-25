@@ -6,14 +6,14 @@ Mostrar que metadados são gravados no PostgreSQL e que banco e arquivos continu
 
 ## Criar um registro de demonstração
 
-1. Conecte a VPN e abra `http://172.31.30.175`.
+1. Conecte a VPN e abra `http://IP_PRIVADO_FRONTEND`.
 2. Entre com a conta de demonstração autorizada. Obtenha a senha diretamente no host por um administrador; ela não está no Git.
 3. Envie um arquivo fictício pequeno, por exemplo `prova-persistencia.txt`.
 4. Confirme que o arquivo aparece na lista e anote o nome para localizá-lo depois da reinicialização.
 
 ## Verificar metadados no banco
 
-Na Backend 1 (`98.88.6.219`), execute:
+Na Backend 1 (`IP_PUBLICO_BACKEND1`), execute:
 
 ```bash
 sudo docker compose \

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="820" viewBox="0 0 1440 820" role="img" aria-labelledby="title desc">
+  <title id="title">Arquitetura atualmente implantada do Dado Seguro</title>
+  <desc id="desc">Frontend acessível pela VPN, API e PostgreSQL ativos na Backend 1; Backend 2 e Backup preparados com Docker, mas sem API iniciada.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4f6f9e"/></marker>
+    <linearGradient id="header" x1="0" x2="1"><stop stop-color="#244a8e"/><stop offset="1" stop-color="#397bc2"/></linearGradient>
+  </defs>
+  <rect width="1440" height="820" rx="28" fill="#f4f7fb"/>
+  <path d="M0 0h1440v116H0z" fill="url(#header)"/>
+  <text x="54" y="53" fill="#fff" font-family="Arial,sans-serif" font-size="32" font-weight="700">Dado Seguro · arquitetura atual</text>
+  <text x="54" y="86" fill="#dce9fb" font-family="Arial,sans-serif" font-size="17">Estado observado em 25/11/2026 · endereços e credenciais omitidos</text>
+  <rect x="48" y="153" width="212" height="156" rx="20" fill="#fff" stroke="#cbd8e8" stroke-width="2"/>
+  <circle cx="154" cy="204" r="29" fill="#e2efff"/><path d="M141 204h26m-13-13v26" stroke="#347fca" stroke-width="5" stroke-linecap="round"/>
+  <text x="154" y="258" text-anchor="middle" fill="#172e52" font-family="Arial,sans-serif" font-size="20" font-weight="700">Cliente</text>
+  <text x="154" y="285" text-anchor="middle" fill="#65758b" font-family="Arial,sans-serif" font-size="16">OpenVPN · faixa privada</text>
+  <rect x="314" y="153" width="352" height="260" rx="20" fill="#fff" stroke="#61a2df" stroke-width="3"/>
+  <rect x="314" y="153" width="352" height="54" rx="20" fill="#e8f3ff"/><path d="M314 188h352" stroke="#e8f3ff" stroke-width="38"/>
+  <text x="340" y="188" fill="#214d86" font-family="Arial,sans-serif" font-size="21" font-weight="700">EC2 Frontend</text>
+  <text x="340" y="244" fill="#263c5a" font-family="Arial,sans-serif" font-size="18" font-weight="700">OpenVPN</text>
+  <text x="340" y="270" fill="#65758b" font-family="Arial,sans-serif" font-size="16">Entrega rota privada ao cliente</text>
+  <text x="340" y="316" fill="#263c5a" font-family="Arial,sans-serif" font-size="18" font-weight="700">Nginx · React/Vite</text>
+  <text x="340" y="342" fill="#65758b" font-family="Arial,sans-serif" font-size="16">Permite acesso apenas pela VPN</text>
+  <text x="340" y="382" fill="#b04a36" font-family="Arial,sans-serif" font-size="15">/api ainda aponta para Backend 1</text>
+  <rect x="728" y="153" width="360" height="350" rx="20" fill="#fff" stroke="#3c9b78" stroke-width="3"/>
+  <rect x="728" y="153" width="360" height="54" rx="20" fill="#e6f7f0"/><path d="M728 188h360" stroke="#e6f7f0" stroke-width="38"/>
+  <text x="754" y="188" fill="#236b54" font-family="Arial,sans-serif" font-size="21" font-weight="700">EC2 Backend 1 · ativa</text>
+  <rect x="758" y="229" width="300" height="104" rx="14" fill="#f5f8fc" stroke="#cbd8e8"/>
+  <text x="908" y="263" text-anchor="middle" fill="#263c5a" font-family="Arial,sans-serif" font-size="18" font-weight="700">Nginx → API Node.js</text>
+  <text x="908" y="293" text-anchor="middle" fill="#65758b" font-family="Arial,sans-serif" font-size="16">Docker Compose · saudável</text>
+  <rect x="758" y="361" width="300" height="110" rx="14" fill="#eef6ff" stroke="#95b9e0"/>
+  <text x="908" y="397" text-anchor="middle" fill="#263c5a" font-family="Arial,sans-serif" font-size="18" font-weight="700">PostgreSQL 16</text>
+  <text x="908" y="427" text-anchor="middle" fill="#65758b" font-family="Arial,sans-serif" font-size="16">Volume Docker persistente</text>
+  <rect x="1148" y="153" width="244" height="165" rx="20" fill="#fff" stroke="#d5a45e" stroke-width="2"/>
+  <text x="1174" y="190" fill="#805d2d" font-family="Arial,sans-serif" font-size="20" font-weight="700">Backend 2</text>
+  <text x="1174" y="226" fill="#55657b" font-family="Arial,sans-serif" font-size="16">Docker instalado</text>
+  <text x="1174" y="252" fill="#55657b" font-family="Arial,sans-serif" font-size="16">Código copiado</text>
+  <text x="1174" y="286" fill="#ad6630" font-family="Arial,sans-serif" font-size="15">API pendente</text>
+  <rect x="1148" y="351" width="244" height="165" rx="20" fill="#fff" stroke="#d5a45e" stroke-width="2"/>
+  <text x="1174" y="388" fill="#805d2d" font-family="Arial,sans-serif" font-size="20" font-weight="700">Servidor Backup</text>
+  <text x="1174" y="424" fill="#55657b" font-family="Arial,sans-serif" font-size="16">Docker instalado</text>
+  <text x="1174" y="450" fill="#55657b" font-family="Arial,sans-serif" font-size="16">Código copiado</text>
+  <text x="1174" y="484" fill="#ad6630" font-family="Arial,sans-serif" font-size="15">API pendente</text>
+  <path d="M260 231h46" stroke="#4f6f9e" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M666 280h54" stroke="#4f6f9e" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M908 336v18" stroke="#4f6f9e" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M1089 270h48" stroke="#b87c3d" stroke-width="3" stroke-dasharray="8 8"/>
+  <path d="M1089 434h48" stroke="#b87c3d" stroke-width="3" stroke-dasharray="8 8"/>
+  <rect x="48" y="570" width="1344" height="180" rx="20" fill="#fff" stroke="#d8e1ec"/>
+  <text x="78" y="613" fill="#203b61" font-family="Arial,sans-serif" font-size="20" font-weight="700">Pendências para alta disponibilidade</text>
+  <text x="78" y="652" fill="#53657c" font-family="Arial,sans-serif" font-size="17">• Permitir PostgreSQL somente pelos Security Groups internos autorizados.</text>
+  <text x="78" y="684" fill="#53657c" font-family="Arial,sans-serif" font-size="17">• Distribuir segredos da aplicação por canal seguro e iniciar as duas APIs secundárias.</text>
+  <text x="78" y="716" fill="#53657c" font-family="Arial,sans-serif" font-size="17">• Ativar upstream Nginx e definir armazenamento compartilhado para uploads.</text>
+</svg>

@@ -16,6 +16,6 @@ Use a faixa privada configurada no servidor OpenVPN e confirme que não conflita
 
 Os certificados usados pelo OpenVPN foram gerenciados com EasyRSA. Consulte [Certificados com EasyRSA](04a-certificados-easyrsa.md) para o fluxo e o modelo de variáveis. Proteja a chave privada e certificados do servidor e de cada cliente. Nunca publique arquivos `.key`, credenciais ou perfis cliente completos em commits. Distribua perfis por canal confiável, revogue certificados/perfis perdidos e faça rotação quando necessário.
 
-Na configuração de prova `test1.0`, o servidor OpenVPN da Frontend usa `10.8.0.0/24` e envia ao cliente uma rota `/32` para o IP privado da própria Frontend. O navegador deve abrir `http://IP_PRIVADO_FRONTEND` somente com o túnel conectado. Nginx limita o conteúdo da aplicação aos clientes VPN; o endereço público retorna `403` para acessos externos. O HTTP desse acesso é encapsulado no túnel criptografado.
+Na configuração de prova `1.1`, o servidor OpenVPN da Frontend envia ao cliente uma rota `/32` para o IP privado da própria Frontend. O navegador deve abrir `http://IP_PRIVADO_FRONTEND` somente com o túnel conectado. Nginx limita o conteúdo da aplicação aos clientes VPN; o endereço público retorna `403` para acessos externos. O HTTP desse acesso é encapsulado no túnel criptografado. O CIDR real da VPN não é publicado; use `VPN_CIDR` nos exemplos.
 
 Os arquivos em `config/vpn/` são esqueletos didáticos: substitua placeholders, instale certificados válidos e revise rotas, TLS e firewall antes de usar. Não os aplique diretamente.

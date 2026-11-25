@@ -14,7 +14,7 @@
 | Certificados | EasyRSA utilizado pelo aluno | `docs/04a-certificados-easyrsa.md`; sem chaves ou certificados reais |
 | Proxy e web | Nginx em ambas; HAProxy no Kitsune | `docs/05-nginx.md` |
 | CORS | Guia Ivan e Kitsune | `docs/06-seguranca.md`; aguarda URLs/API |
-| Aplicação e persistência | Kitsune inclui frontend/backend/PostgreSQL/Docker | Planejados, não implementados |
+| Aplicação e persistência | Kitsune inclui frontend/backend/PostgreSQL/Docker | React/Vite, API Node.js/TypeScript, PostgreSQL e Compose implementados para a demonstração |
 
 ## Autoria e licença
 

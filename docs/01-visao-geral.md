@@ -21,9 +21,9 @@ O escopo atual é uma demonstração: login de administrador, listagem, upload, 
 | Componente | Estado |
 |---|---|
 | Documentação e estrutura | Preparada neste repositório |
-| AWS / EC2 | Quatro instâncias `t3.micro` foram observadas em execução no snapshot de 22/11/2026; detalhes em [Estado da implantação](09-estado-implantacao.md) |
-| VPN e certificados | OpenVPN e EasyRSA utilizados anteriormente; saúde atual e acesso VPN à VPC precisam ser confirmados |
-| Nginx | Configuração histórica de proxy/balanceamento com dois primários e um backup; validar serviços e endereços atuais |
+| AWS / EC2 | Quatro instâncias de laboratório foram verificadas; endereços e identificadores foram omitidos |
+| VPN e certificados | OpenVPN ativo; cliente conectado e rota privada validada |
+| Nginx | Frontend restringe acesso à VPN e encaminha API para Backend 1; balanceamento ainda pendente |
 | Frontend | React/Vite servido pelo Nginx; chamadas same-origin para `/api` |
 | Backend / API | Node.js/TypeScript em contêiner; rotas documentadas em `backend/README.md` |
 | Banco de dados | PostgreSQL 16 em contêiner; tabelas de usuário, sessão, arquivos e auditoria |
@@ -31,4 +31,4 @@ O escopo atual é uma demonstração: login de administrador, listagem, upload, 
 
 ## Premissas e limites
 
-Na branch `test1.0`, a aplicação é restrita à faixa OpenVPN e acessada pelo IP privado da Frontend; o IP público retorna 403 fora do túnel. O acesso privado usa HTTP encapsulado no OpenVPN. PostgreSQL e API executam em Docker Compose, com schema SQL versionado. SFTP está limitado a uma pasta separada. O balanceamento/failover e os backups externos ainda serão preparados para as provas. Não inclua dados reais ou credenciais neste repositório.
+Na branch `1.1`, a aplicação é restrita à faixa OpenVPN e acessada pelo IP privado da Frontend; o endereço público retorna `403`. O acesso privado usa HTTP encapsulado no OpenVPN. PostgreSQL e API executam em Docker Compose, com schema SQL versionado. SFTP está limitado a uma pasta separada. O balanceamento/failover e os backups externos ainda serão preparados para as provas. Não inclua dados reais ou credenciais neste repositório.

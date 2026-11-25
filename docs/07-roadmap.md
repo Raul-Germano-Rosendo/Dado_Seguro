@@ -28,10 +28,10 @@
 
 ## 5 — Operação
 
-- Confirmar conectividade permitida e bloqueio de tráfego não autorizado.
+- Confirmar conectividade permitida e bloqueio de tráfego não autorizado; acesso público bloqueado e cliente VPN validado em 25/11/2026.
 - Verificar logs, atualização, backup/restauração e custos.
 - Registrar evidências da implantação real sem expor dados sensíveis.
 
 Estas etapas registram o que falta para sair da demonstração. O estado efetivamente implantado está em [Estado da implantação](09-estado-implantacao.md).
 
-> Atualização: frontend, API, PostgreSQL, SFTP e HTTPS foram integrados para demonstração em 23/11/2026. O schema inicial é aplicado a partir de SQL montado no PostgreSQL, e a persistência foi conferida após parar/reiniciar os containers. Em 24/11/2026, o bloqueio público 403 e o acesso pelo caminho VPN no próprio host foram confirmados; falta reconectar e testar o perfil OpenVPN no PC cliente. Balanceamento/failover, backup externo e restauração testada continuam pendentes.
+> Atualização de 25/11/2026: frontend, API, PostgreSQL, SFTP e OpenVPN foram integrados. O schema SQL está versionado e a persistência foi conferida após reiniciar os containers. O cliente OpenVPN acessa o frontend privado, enquanto o acesso público retorna `403`. Docker e arquivos de réplica estão nos nós secundários; balanceamento/failover, storage compartilhado e backup externo com restauração continuam pendentes.

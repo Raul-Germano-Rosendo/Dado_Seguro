@@ -1,5 +1,7 @@
 # 01 — Comprovar acesso somente via VPN
 
+Substitua `IP_PUBLICO_FRONTEND` e `IP_PRIVADO_FRONTEND` pelos endereços atuais da instância antes de executar os exemplos. Não os deixe preenchidos com valores reais em versões públicas desta documentação.
+
 ## Objetivo
 
 Demonstrar que o IP público não entrega a aplicação a quem está fora da VPN, enquanto o aluno conectado ao OpenVPN acessa a Frontend pelo IP privado.
@@ -7,21 +9,21 @@ Demonstrar que o IP público não entrega a aplicação a quem está fora da VPN
 ## Preparação
 
 1. Confirme que o laboratório AWS está iniciado.
-2. Conecte `windows-client.ovpn` no cliente OpenVPN. O perfil aponta para `23.22.200.189:1194/UDP`.
+2. Conecte o perfil de cliente OpenVPN fornecido pelo administrador. O endpoint usa `IP_PUBLICO_FRONTEND:1194/UDP`.
 3. No Windows, confira se a rota foi instalada:
 
    ```powershell
-   route print -4 | findstr 172.31.30.175
+   route print -4 | findstr IP_PRIVADO_FRONTEND
    ```
 
-   A rota precisa encaminhar `172.31.30.175/32` pela interface VPN.
+   A rota precisa encaminhar `IP_PRIVADO_FRONTEND/32` pela interface VPN.
 
 ## Prova fora da VPN
 
 Desconecte o OpenVPN ou use um computador sem o perfil e abra:
 
 ```text
-https://23.22.200.189
+https://IP_PUBLICO_FRONTEND
 ```
 
 Resultado esperado: `403 Forbidden`. A mesma política se aplica a `/api/healthz`. O caminho ACME `/.well-known/acme-challenge/` permanece acessível para a renovação do certificado, mas não serve a aplicação.
@@ -29,8 +31,8 @@ Resultado esperado: `403 Forbidden`. A mesma política se aplica a `/api/healthz
 Opcionalmente, no PowerShell:
 
 ```powershell
-curl.exe -i https://23.22.200.189/
-curl.exe -i https://23.22.200.189/api/healthz
+curl.exe -i https://IP_PUBLICO_FRONTEND/
+curl.exe -i https://IP_PUBLICO_FRONTEND/api/healthz
 ```
 
 ## Prova pela VPN
@@ -38,21 +40,21 @@ curl.exe -i https://23.22.200.189/api/healthz
 Reconecte o perfil e abra:
 
 ```text
-http://172.31.30.175
+http://IP_PRIVADO_FRONTEND
 ```
 
 Resultado esperado: tela de login. Verifique também a saúde da API:
 
 ```powershell
-curl.exe -i http://172.31.30.175/api/healthz
+curl.exe -i http://IP_PRIVADO_FRONTEND/api/healthz
 ```
 
 Resultado esperado: HTTP `200` e `{"status":"ok"}`.
 
 ## Explicação curta
 
-O Nginx da Frontend permite somente clientes da faixa OpenVPN `10.8.0.0/24`. O cliente VPN recebe uma rota específica para o IP privado da Frontend. O HTTP usado pelo navegador fica dentro do túnel criptografado; acessos públicos diretos recebem `403`.
+O Nginx da Frontend permite somente clientes da faixa OpenVPN `VPN_CIDR`. O cliente VPN recebe uma rota específica para o IP privado da Frontend. O HTTP usado pelo navegador fica dentro do túnel criptografado; acessos públicos diretos recebem `403`.
 
 ## Estado da validação
 
-O bloqueio público foi testado do computador fora da VPN: HTTP, HTTPS e API retornaram `403`. A página e o health check responderam `200` pelo túnel `tun0` no próprio servidor. A conexão do perfil OpenVPN no computador Windows ainda precisa ser reconectada e conferida antes da apresentação.
+Em 25/11/2026, o computador conectado recebeu a rota privada. A página e `/api/healthz` retornaram `200` pelo IP privado; o endereço público permaneceu bloqueado com `403`.
